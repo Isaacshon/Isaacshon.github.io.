@@ -1,0 +1,47 @@
+[
+  {
+    "company_name": "TechFlow Solutions Inc.",
+    "category": "IT/Security",
+    "diamond_score": 98,
+    "trigger_event": "New Business Registration",
+    "action_plan": "New tech incorporation often needs immediate cloud setup and cybersecurity compliance. Pitch the 'Startup Launchpad' package.",
+    "location": "North York, ON",
+    "timestamp": "2026-02-02T08:00:00Z"
+  },
+  {
+    "company_name": "Maple Leaf Construction",
+    "category": "Interior/Office",
+    "diamond_score": 94,
+    "trigger_event": "Commercial Permit ($500k)",
+    "action_plan": "High-value office fit-out detected. Pitch premium office furniture and smart meeting room solutions immediately.",
+    "location": "Toronto, ON",
+    "timestamp": "2026-02-02T08:00:00Z"
+  },
+  {
+    "company_name": "CloudScale",
+    "category": "Marketing",
+    "diamond_score": 92,
+    "trigger_event": "Hiring VP Sales",
+    "action_plan": "New Sales VP means new budget for lead gen tools. Pitch your agency as an extension of their new sales team.",
+    "location": "Toronto, ON",
+    "timestamp": "2026-02-02T08:00:00Z"
+  },
+  {
+    "company_name": "GreenLife Organics",
+    "category": "General Business",
+    "diamond_score": 89,
+    "trigger_event": "Retail Lease Signed",
+    "action_plan": "New retail location requires POS systems and local SEO visibility. Offer a 'Grand Opening' digital package.",
+    "location": "Mississauga, ON",
+    "timestamp": "2026-02-02T08:00:00Z"
+  },
+  {
+    "company_name": "Quantum Financial",
+    "category": "IT/Security",
+    "diamond_score": 87,
+    "trigger_event": "Series A Funding",
+    "action_plan": "Significant capital injection suggests readiness for enterprise-grade security auditing.",
+    "location": "Toronto, ON",
+    "timestamp": "2026-02-02T08:00:00Z"
+  }
+]
