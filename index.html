@@ -70,6 +70,10 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body>
@@ -85,8 +89,8 @@
             </div>
             
             <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="text-[15px] font-bold text-gray-900 border-b-2 border-gray-900 py-6">Dashboard</a>
-                <a href="#" onclick="openPricing(); return false;" class="text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors">Pricing</a>
+                <a href="#dashboard-top" class="text-[15px] font-bold text-gray-900 border-b-2 border-gray-900 py-6">Dashboard</a>
+                <a href="#pricing-section" class="text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors">Pricing</a>
                 <a href="about.html" class="text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors">About</a>
                 <a href="contact.html" class="text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors">Contact</a>
             </nav>
@@ -106,11 +110,12 @@
         </div>
     </header>
 
-    <!-- Main Dashboard Layout -->
-    <main class="max-w-screen-2xl mx-auto pt-[80px] pb-10 px-8 h-screen flex flex-col">
+    <!-- Main Dashboard Section -->
+    <!-- Changed h-screen to min-h-screen to allow scrolling -->
+    <main class="max-w-screen-2xl mx-auto pt-[80px] px-8 flex flex-col min-h-screen mb-20" id="dashboard-top">
         
         <!-- Interactive Ticker -->
-        <div class="bg-gray-900 text-white text-sm py-2 px-4 rounded-lg mb-6 flex items-center gap-3 overflow-hidden shadow-lg relative">
+        <div class="bg-gray-900 text-white text-sm py-2 px-4 rounded-lg mb-6 flex items-center gap-3 overflow-hidden shadow-lg relative shrink-0">
             <span class="font-bold text-green-400 shrink-0 flex items-center gap-1">
                 <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -159,8 +164,8 @@
             </div>
         </div>
 
-        <!-- Split View Content -->
-        <div class="flex-1 grid grid-cols-12 gap-6 min-h-0 relative z-10">
+        <!-- Split View Content (Fixed Height for Scrollable Interior) -->
+        <div class="grid grid-cols-12 gap-6 h-[750px] relative z-10">
             
             <!-- Left Panel: Lead List (4 cols) -->
             <div class="col-span-12 lg:col-span-4 flex flex-col bg-white rounded-[24px] shadow-toss border border-gray-100 overflow-hidden">
@@ -172,9 +177,10 @@
                         <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="IT/Security">IT</button>
                         <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="Interior/Office">Interior</button>
                     </div>
-                    <button onclick="openPricing()" class="ml-2 text-xs font-bold text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-full transition-colors flex items-center gap-1">
+                    <!-- Sidebar Pricing Trigger -->
+                    <a href="#pricing-section" class="ml-2 text-xs font-bold text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-full transition-colors flex items-center gap-1 scroll-smooth">
                         <span class="material-symbols-outlined text-[14px]">diamond</span> Upgrade
-                    </button>
+                    </a>
                 </div>
 
                 <!-- List Content -->
@@ -211,74 +217,106 @@
         </div>
     </main>
 
-    <!-- Pricing Modal overlay -->
-    <div id="pricing-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
-        <div class="bg-[#F2F4F6] w-full max-w-5xl rounded-[32px] p-8 md:p-12 shadow-2xl relative transform scale-95 transition-transform duration-300" id="pricing-content">
-            <button onclick="closePricing()" class="absolute top-6 right-6 p-2 bg-white rounded-full text-gray-500 hover:text-gray-900 shadow-sm transition-transform hover:rotate-90">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-            
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-900 mb-3">Unlock Your Full Sales Potential</h2>
-                <p class="text-gray-500 text-lg">Choose a plan that fits your growth.</p>
+    <!-- Pricing Section (On Page) -->
+    <section id="pricing-section" class="py-20 bg-white border-t border-gray-100">
+        <div class="max-w-screen-xl mx-auto px-8">
+            <div class="text-center mb-16">
+                <span class="text-blue-500 font-bold uppercase tracking-widest text-sm mb-2 block">Subscription Plans</span>
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Unlock Your Full Sales Potential</h2>
+                <p class="text-gray-500 text-lg max-w-2xl mx-auto">Choose a plan that fits your growth. Start with a free trial and upgrade as you close more deals.</p>
                 
-                <!-- Toggle -->
-                <div class="flex items-center justify-center gap-4 mt-6">
+                <!-- Toggle (Visual Only for Page) -->
+                <div class="flex items-center justify-center gap-4 mt-8">
                     <span class="text-gray-500 font-medium">Monthly</span>
-                    <button class="w-14 h-8 bg-blue-500 rounded-full relative transition-colors shadow-inner" onclick="toggleBilling(this)">
-                        <div class="w-6 h-6 bg-white rounded-full absolute top-1 left-1 shadow-sm transition-transform duration-300" id="toggle-circle"></div>
+                    <button class="w-14 h-8 bg-blue-500 rounded-full relative transition-colors shadow-inner" onclick="toggleBillingPage(this)">
+                        <div class="w-6 h-6 bg-white rounded-full absolute top-1 left-1 shadow-sm transition-transform duration-300" id="toggle-circle-page"></div>
                     </button>
                     <span class="text-gray-900 font-bold">Annual <span class="text-blue-500 text-xs bg-blue-50 px-2 py-0.5 rounded-full ml-1">-20%</span></span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Starter -->
-                <div class="bg-white p-8 rounded-[24px] shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 border border-gray-100 flex flex-col">
+                <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col hover:-translate-y-2 transition-transform duration-300">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Starter</h3>
                     <p class="text-gray-500 text-sm mb-6">For solo founders</p>
                     <div class="mb-6">
                         <span class="text-4xl font-bold text-gray-900">$59.9</span>
                         <span class="text-gray-400">/mo CAD</span>
                     </div>
-                    <ul class="space-y-3 mb-8 flex-1">
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> 50 Leads / month</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> Basic Signals</li>
+                    <ul class="space-y-4 mb-8 flex-1">
+                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> 50 Leads / month</li>
+                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Basic Signals</li>
                     </ul>
-                    <button onclick="selectPlan('Starter')" class="w-full bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors">Start Free Trial</button>
+                    <button onclick="selectPlan('Starter')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors shadow-sm">Start Free Trial</button>
                 </div>
 
                 <!-- Pro (Featured) -->
-                <div class="bg-gray-900 p-8 rounded-[24px] shadow-toss-hover relative transform md:-translate-y-4 border border-gray-800 flex flex-col">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-gray-900">MOST POPULAR</div>
+                <div class="bg-gray-900 p-8 rounded-[32px] border border-gray-800 flex flex-col relative shadow-2xl transform md:-translate-y-4">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg border-4 border-white dark:border-gray-900">MOST POPULAR</div>
                     <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
                     <p class="text-gray-400 text-sm mb-6">For growing sales teams</p>
                     <div class="mb-6">
                         <span class="text-4xl font-bold text-white">$159.9</span>
                         <span class="text-gray-400">/mo CAD</span>
                     </div>
-                    <ul class="space-y-3 mb-8 flex-1">
-                        <li class="flex items-center gap-2 text-sm text-gray-300"><span class="material-symbols-outlined text-blue-400 text-[18px]">check</span> 200 Leads / month</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-300"><span class="material-symbols-outlined text-blue-400 text-[18px]">check</span> Verified Emails & Phone</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-300"><span class="material-symbols-outlined text-blue-400 text-[18px]">check</span> CRM Integration</li>
+                    <ul class="space-y-4 mb-8 flex-1">
+                        <li class="flex items-center gap-3 text-gray-300"><span class="bg-blue-500 text-white rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> 200 Leads / month</li>
+                        <li class="flex items-center gap-3 text-gray-300"><span class="bg-blue-500 text-white rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Verified Emails & Phone</li>
+                        <li class="flex items-center gap-3 text-gray-300"><span class="bg-blue-500 text-white rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> CRM Integration</li>
                     </ul>
-                    <button onclick="selectPlan('Pro')" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-transform active:scale-95">Get Started</button>
+                    <button onclick="selectPlan('Pro')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-2xl hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-transform active:scale-95">Get Started</button>
                 </div>
 
                 <!-- Enterprise -->
-                <div class="bg-white p-8 rounded-[24px] shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 border border-gray-100 flex flex-col">
+                <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col hover:-translate-y-2 transition-transform duration-300">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Growth</h3>
                     <p class="text-gray-500 text-sm mb-6">For scaling organizations</p>
                     <div class="mb-6">
                         <span class="text-4xl font-bold text-gray-900">$259.9</span>
                         <span class="text-gray-400">/mo CAD</span>
                     </div>
-                    <ul class="space-y-3 mb-8 flex-1">
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> Unlimited Leads</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> API Access</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> Dedicated Success Mgr</li>
+                    <ul class="space-y-4 mb-8 flex-1">
+                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Unlimited Leads</li>
+                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> API Access</li>
+                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Dedicated Success Mgr</li>
                     </ul>
-                    <button onclick="selectPlan('Growth')" class="w-full bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors">Contact Sales</button>
+                    <button onclick="selectPlan('Growth')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors shadow-sm">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Modal overlay (Keep for 'Unlock' action) -->
+    <div id="pricing-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#F2F4F6] w-full max-w-5xl rounded-[32px] p-8 md:p-12 shadow-2xl relative transform scale-95 transition-transform duration-300" id="pricing-content">
+            <button onclick="closePricing()" class="absolute top-6 right-6 p-2 bg-white rounded-full text-gray-500 hover:text-gray-900 shadow-sm transition-transform hover:rotate-90">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">Upgrade to Unlock Data</h2>
+                <p class="text-gray-500 text-lg">You hit a limit! Choose a plan to see decision maker contacts.</p>
+                <!-- Simplified content for modal since we have full section now -->
+            </div>
+             <!-- Reusing the pricing cards grid structure via JS or duplicate? I'll just duplicate for simplicity of this single file demo -->
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Starter Modal -->
+                <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900">Starter</h3>
+                    <div class="my-4"><span class="text-3xl font-bold">$59.9</span>/mo</div>
+                    <button onclick="selectPlan('Starter')" class="bg-gray-100 text-gray-900 font-bold py-3 rounded-xl hover:bg-gray-200">Select</button>
+                </div>
+                <!-- Pro Modal -->
+                <div class="bg-gray-900 p-6 rounded-[24px] shadow-toss border border-gray-800 flex flex-col text-white transform scale-105">
+                    <h3 class="text-lg font-bold">Pro</h3>
+                    <div class="my-4"><span class="text-3xl font-bold">$159.9</span>/mo</div>
+                    <button onclick="selectPlan('Pro')" class="bg-blue-500 text-white font-bold py-3 rounded-xl hover:bg-blue-600">Select</button>
+                </div>
+                <!-- Growth Modal -->
+                <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900">Growth</h3>
+                    <div class="my-4"><span class="text-3xl font-bold">$259.9</span>/mo</div>
+                    <button onclick="selectPlan('Growth')" class="bg-gray-100 text-gray-900 font-bold py-3 rounded-xl hover:bg-gray-200">Select</button>
                 </div>
             </div>
         </div>
@@ -286,12 +324,56 @@
 
     <!-- Scripts -->
     <script>
-        // --- Mock Data ---
+        // --- Mock Data with Company Metadata ---
         const MOCK_LEADS = [
-            { id: 1, company: "TechFlow Inc.", category: "IT/Security", score: 92, location: "San Francisco, CA", trigger: "Series B Funding ($30M)", plan: "Expanding engineering team by 200%. Needs cybersecurity audit." },
-            { id: 2, company: "GreenLeaf Studios", category: "Interior/Office", score: 85, location: "Austin, TX", trigger: "New Office Lease", plan: "Relocating to 15,000 sqft office. Needs furniture and layout planning." },
-            { id: 3, company: "Nexus Marketing", category: "Marketing", score: 88, location: "New York, NY", trigger: "CMO Hired", plan: "New Chief Marketing Officer joined. Likely reviewing ad agency contracts." },
-            { id: 4, company: "Apex Logistics", category: "General Business", score: 76, location: "Chicago, IL", trigger: "Supply Chain Expansion", plan: "Building new distribution center. Needs logistics software." },
+            { 
+                id: 1, 
+                company: "TechFlow Inc.", 
+                category: "IT/Security", 
+                score: 92, 
+                location: "San Francisco, CA", 
+                founded: "2015",
+                size: "100-250",
+                revenue: "$15M",
+                trigger: "Series B Funding ($30M)", 
+                plan: "Expanding engineering team by 200%. Needs cybersecurity audit." 
+            },
+            { 
+                id: 2, 
+                company: "GreenLeaf Studios", 
+                category: "Interior/Office", 
+                score: 85, 
+                location: "Austin, TX", 
+                founded: "2018",
+                size: "50-100",
+                revenue: "$5M",
+                trigger: "New Office Lease", 
+                plan: "Relocating to 15,000 sqft office. Needs furniture and layout planning." 
+            },
+            { 
+                id: 3, 
+                company: "Nexus Marketing", 
+                category: "Marketing", 
+                score: 88, 
+                location: "New York, NY", 
+                founded: "2020",
+                size: "10-50",
+                revenue: "$2M",
+                trigger: "CMO Hired", 
+                plan: "New Chief Marketing Officer joined. Likely reviewing ad agency contracts." 
+            },
+            { 
+                id: 4, 
+                company: "Apex Logistics", 
+                category: "General Business", 
+                score: 76, 
+                location: "Chicago, IL", 
+                founded: "1998",
+                size: "500-1000",
+                revenue: "$80M",
+                trigger: "Supply Chain Expansion", 
+                plan: "Building new distribution center. Needs logistics software." 
+            },
         ];
 
         // --- State ---
@@ -365,7 +447,7 @@
             setTimeout(() => {
                 detailContainer.innerHTML = `
                     <div class="animate-fade-in-up">
-                        <div class="flex items-start justify-between mb-8">
+                        <div class="flex items-start justify-between mb-6">
                             <div>
                                 <div class="flex items-center gap-3 mb-3">
                                     <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">${lead.category}</span>
@@ -377,6 +459,31 @@
                             <div class="text-center bg-gray-50 p-4 rounded-2xl border border-gray-100">
                                 <div class="text-sm text-gray-400 font-bold uppercase mb-1">Lead Score</div>
                                 <div class="text-4xl font-bold text-blue-500">${lead.score}</div>
+                            </div>
+                        </div>
+
+                        <!-- Company Info Row -->
+                        <div class="flex gap-4 mb-8">
+                             <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
+                                <span class="material-symbols-outlined text-gray-400">calendar_month</span>
+                                <div>
+                                    <div class="text-xs text-gray-400 font-bold uppercase">Founded</div>
+                                    <div class="text-sm font-bold text-gray-900">${lead.founded}</div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
+                                <span class="material-symbols-outlined text-gray-400">groups</span>
+                                <div>
+                                    <div class="text-xs text-gray-400 font-bold uppercase">Size</div>
+                                    <div class="text-sm font-bold text-gray-900">${lead.size}</div>
+                                </div>
+                            </div>
+                             <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
+                                <span class="material-symbols-outlined text-gray-400">payments</span>
+                                <div>
+                                    <div class="text-xs text-gray-400 font-bold uppercase">Est. Rev</div>
+                                    <div class="text-sm font-bold text-gray-900">${lead.revenue}</div>
+                                </div>
                             </div>
                         </div>
 
@@ -438,8 +545,30 @@
                 btn.disabled = false;
 
                 const newLeads = [
-                    { id: Date.now(), company: "Solaris AI", category: "IT/Security", score: 98, location: "Palo Alto, CA", trigger: "Hiring VP of Engineering", plan: "Scaling tech team rapidly." },
-                    { id: Date.now()+1, company: "BlueOcean Retail", category: "Marketing", score: 89, location: "Miami, FL", trigger: "Rebranding Announced", plan: "Major brand overhaul." }
+                    { 
+                        id: Date.now(), 
+                        company: "Solaris AI", 
+                        category: "IT/Security", 
+                        score: 98, 
+                        location: "Palo Alto, CA", 
+                        founded: "2022",
+                        size: "20-50",
+                        revenue: "$8M",
+                        trigger: "Hiring VP of Engineering", 
+                        plan: "Scaling tech team rapidly." 
+                    },
+                    { 
+                        id: Date.now()+1, 
+                        company: "BlueOcean Retail", 
+                        category: "Marketing", 
+                        score: 89, 
+                        location: "Miami, FL", 
+                        founded: "2016",
+                        size: "200-500",
+                        revenue: "$40M",
+                        trigger: "Rebranding Announced", 
+                        plan: "Major brand overhaul." 
+                    }
                 ];
                 
                 leads = [...newLeads, ...leads];
@@ -460,7 +589,7 @@
             }, 500);
         }
 
-        // --- Pricing Modal Logic ---
+        // --- Pricing Trigger Logic ---
         function openPricing() {
             pricingModal.classList.remove('hidden');
             pricingModal.classList.add('flex');
@@ -482,12 +611,11 @@
             }, 300);
         }
 
-        function toggleBilling(btn) {
+        function toggleBillingPage(btn) {
             isAnnual = !isAnnual;
             const circle = btn.querySelector('div');
             circle.style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
-            
-            // Just visual feedback for now, would typically update price text
+            // Visual only for this static demo page
         }
 
         function selectPlan(plan) {
