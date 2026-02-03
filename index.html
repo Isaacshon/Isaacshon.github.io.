@@ -106,12 +106,48 @@
     </header>
 
     <!-- Main Dashboard Layout -->
-    <main class="max-w-screen-2xl mx-auto pt-[100px] pb-10 px-8 h-screen flex flex-col">
+    <main class="max-w-screen-2xl mx-auto pt-[80px] pb-10 px-8 h-screen flex flex-col">
         
+        <!-- Interactive Ticker -->
+        <div class="bg-gray-900 text-white text-sm py-2 px-4 rounded-lg mb-6 flex items-center gap-3 overflow-hidden shadow-lg relative">
+            <span class="font-bold text-green-400 shrink-0 flex items-center gap-1">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                LIVE
+            </span>
+            <div class="whitespace-nowrap flex gap-10 animate-ticker" id="news-ticker">
+                <!-- Injected via JS -->
+            </div>
+            <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-900 to-transparent"></div>
+        </div>
+
+        <!-- Welcome / Service Intro Banner (Dismissible) -->
+        <div id="welcome-banner" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-8 rounded-[24px] shadow-toss mb-6 relative overflow-hidden shrink-0 transition-all duration-500">
+            <div class="relative z-10 flex justify-between items-start">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl font-bold mb-3">Knock on the right doors, at the right time.</h2>
+                    <p class="text-blue-100 text-lg mb-6 leading-relaxed">
+                        Eknoc is your <strong>AI Sales Development Representative</strong>. We track millions of data points—funding rounds, office moves, and hiring sprees—to identify companies that are ready to buy <em>right now</em>. Stop cold calling; start warm closing.
+                    </p>
+                    <button onclick="dismissBanner()" class="text-sm font-semibold text-white bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm">
+                        Dismiss Intro
+                    </button>
+                </div>
+                <div class="hidden lg:block">
+                     <span class="material-symbols-outlined text-white/20 text-[180px] absolute -right-10 -bottom-20 rotate-12">rocket_launch</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Dashboard Toolbar -->
-        <div class="flex justify-between items-end mb-6 shrink-0">
+        <div class="flex justify-between items-end mb-6 shrink-0 z-20">
             <div>
-                <h1 class="text-[28px] font-bold text-gray-900 mb-1">Sales Signals</h1>
+                <h1 class="text-[28px] font-bold text-gray-900 mb-1 flex items-center gap-2">
+                    Sales Signals
+                    <span class="text-gray-400 text-lg font-normal">/ Dashboard</span>
+                </h1>
                 <p class="text-gray-500 text-[15px]">Real-time buying intent signals tailored for you.</p>
             </div>
             <div class="flex gap-3">
@@ -123,16 +159,16 @@
         </div>
 
         <!-- Split View Content -->
-        <div class="flex-1 grid grid-cols-12 gap-6 min-h-0">
+        <div class="flex-1 grid grid-cols-12 gap-6 min-h-0 relative z-10">
             
             <!-- Left Panel: Lead List (4 cols) -->
             <div class="col-span-12 lg:col-span-4 flex flex-col bg-white rounded-[24px] shadow-toss border border-gray-100 overflow-hidden">
                 <!-- Filters -->
                 <div class="p-4 border-b border-gray-100 flex gap-2 overflow-x-auto hide-scrollbar whitespace-nowrap shrink-0">
-                    <button class="filter-btn active bg-gray-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold" data-category="ALL">All</button>
-                    <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200" data-category="Marketing">Marketing</button>
-                    <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200" data-category="IT/Security">IT</button>
-                    <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200" data-category="Interior/Office">Interior</button>
+                    <button class="filter-btn active bg-gray-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold transition-colors" data-category="ALL">All</button>
+                    <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="Marketing">Marketing</button>
+                    <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="IT/Security">IT</button>
+                    <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="Interior/Office">Interior</button>
                 </div>
 
                 <!-- List Content -->
@@ -145,7 +181,7 @@
             <div class="col-span-12 lg:col-span-8 bg-white rounded-[24px] shadow-toss border border-gray-100 overflow-hidden relative hidden lg:block">
                 <div id="detail-view" class="h-full overflow-y-auto p-10 flex flex-col">
                     <!-- Empty State -->
-                    <div class="m-auto text-center animate-fade-in-up">
+                    <div class="m-auto text-center animate-pulse-slow">
                         <div class="bg-blue-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
                             <span class="material-symbols-outlined text-blue-500 text-5xl">ads_click</span>
                         </div>
@@ -169,6 +205,79 @@
         </div>
     </main>
 
+    <!-- Pricing Modal overlay -->
+    <div id="pricing-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#F2F4F6] w-full max-w-5xl rounded-[32px] p-8 md:p-12 shadow-2xl relative transform scale-95 transition-transform duration-300" id="pricing-content">
+            <button onclick="closePricing()" class="absolute top-6 right-6 p-2 bg-white rounded-full text-gray-500 hover:text-gray-900 shadow-sm transition-transform hover:rotate-90">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">Unlock Your Full Sales Potential</h2>
+                <p class="text-gray-500 text-lg">Choose a plan that fits your growth.</p>
+                
+                <!-- Toggle -->
+                <div class="flex items-center justify-center gap-4 mt-6">
+                    <span class="text-gray-500 font-medium">Monthly</span>
+                    <button class="w-14 h-8 bg-blue-500 rounded-full relative transition-colors shadow-inner" onclick="toggleBilling(this)">
+                        <div class="w-6 h-6 bg-white rounded-full absolute top-1 left-1 shadow-sm transition-transform duration-300" id="toggle-circle"></div>
+                    </button>
+                    <span class="text-gray-900 font-bold">Annual <span class="text-blue-500 text-xs bg-blue-50 px-2 py-0.5 rounded-full ml-1">-20%</span></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Starter -->
+                <div class="bg-white p-8 rounded-[24px] shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 border border-gray-100 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Starter</h3>
+                    <p class="text-gray-500 text-sm mb-6">For solo founders</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-gray-900">$59.9</span>
+                        <span class="text-gray-400">/mo CAD</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> 50 Leads / month</li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> Basic Signals</li>
+                    </ul>
+                    <button onclick="selectPlan('Starter')" class="w-full bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors">Start Free Trial</button>
+                </div>
+
+                <!-- Pro (Featured) -->
+                <div class="bg-gray-900 p-8 rounded-[24px] shadow-toss-hover relative transform md:-translate-y-4 border border-gray-800 flex flex-col">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-gray-900">MOST POPULAR</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
+                    <p class="text-gray-400 text-sm mb-6">For growing sales teams</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-white">$159.9</span>
+                        <span class="text-gray-400">/mo CAD</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-center gap-2 text-sm text-gray-300"><span class="material-symbols-outlined text-blue-400 text-[18px]">check</span> 200 Leads / month</li>
+                        <li class="flex items-center gap-2 text-sm text-gray-300"><span class="material-symbols-outlined text-blue-400 text-[18px]">check</span> Verified Emails & Phone</li>
+                        <li class="flex items-center gap-2 text-sm text-gray-300"><span class="material-symbols-outlined text-blue-400 text-[18px]">check</span> CRM Integration</li>
+                    </ul>
+                    <button onclick="selectPlan('Pro')" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-transform active:scale-95">Get Started</button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="bg-white p-8 rounded-[24px] shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 border border-gray-100 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Growth</h3>
+                    <p class="text-gray-500 text-sm mb-6">For scaling organizations</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-gray-900">$259.9</span>
+                        <span class="text-gray-400">/mo CAD</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> Unlimited Leads</li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> API Access</li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="material-symbols-outlined text-blue-500 text-[18px]">check</span> Dedicated Success Mgr</li>
+                    </ul>
+                    <button onclick="selectPlan('Growth')" class="w-full bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // --- Mock Data ---
@@ -183,12 +292,32 @@
         let leads = [...MOCK_LEADS];
         let activeId = null;
         let activeCategory = 'ALL';
+        let isAnnual = false;
 
         // --- Elements ---
         const listContainer = document.getElementById('leads-list');
         const detailContainer = document.getElementById('detail-view');
         const scanOverlay = document.getElementById('scan-overlay');
         const scanStatus = document.getElementById('scan-status');
+        const pricingModal = document.getElementById('pricing-modal');
+        const pricingContent = document.getElementById('pricing-content');
+        const ticker = document.getElementById('news-ticker');
+        const welcomeBanner = document.getElementById('welcome-banner');
+
+        // --- Ticker Logic ---
+        const newsItems = [
+            "TechFlow Inc. raised $30M Series B · 2m ago",
+            "Shopify announces new Toronto HQ · 5m ago",
+            "Samsung Biologics expands plant · 12m ago",
+            "RBC opens new innovation hub · 15m ago",
+            "StartUp North hiring 50+ engineers · 22m ago"
+        ];
+        
+        // Duplicate items for infinite scroll illusion
+        const tickerContent = [...newsItems, ...newsItems].map(item => 
+            `<span class="opacity-80 hover:opacity-100 hover:text-blue-400 transition-colors cursor-pointer">• ${item}</span>`
+        ).join('');
+        ticker.innerHTML = tickerContent;
 
         // --- Render List ---
         function renderList() {
@@ -271,7 +400,7 @@
                            <span class="material-symbols-outlined text-gray-300 text-6xl mb-4 block">lock_person</span>
                            <h3 class="text-xl font-bold text-gray-900 mb-2">Decision Makers Hidden</h3>
                            <p class="text-gray-500 mb-6">Unlock to see CEO, CTO, and VP of Sales contacts.</p>
-                           <button onclick="window.location.href='contact.html'" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95">
+                           <button onclick="openPricing()" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95 relative z-10">
                                 Unlock Contact Data
                            </button>
                         </div>
@@ -282,62 +411,96 @@
             }, 50);
         }
 
-        // --- Scan Simulation ---
+        // --- Scan Implementation ---
         function startScan() {
-            // User feedback
             const btn = document.getElementById('scan-btn');
             btn.disabled = true;
             scanOverlay.classList.remove('hidden');
             scanOverlay.classList.add('flex');
             
-            const messages = [
-                "Connecting to LinkedIn API...",
-                "Analyzing Funding Rounds...",
-                "Reviewing Job Postings...",
-                "Calculating Diamond Scores..."
-            ];
-
+            const messages = ["Connecting to LinkedIn API...", "Reviewing Job Postings...", "Calculating Scores..."];
             let msgIndex = 0;
             const msgInterval = setInterval(() => {
                 scanStatus.innerText = messages[msgIndex % messages.length];
                 msgIndex++;
-            }, 800);
+            }, 1000);
 
-            // Finish scan after 3.2s
             setTimeout(() => {
                 clearInterval(msgInterval);
                 scanOverlay.classList.add('hidden');
                 scanOverlay.classList.remove('flex');
                 btn.disabled = false;
 
-                // Add new leads
                 const newLeads = [
-                    { id: Date.now(), company: "Solaris AI", category: "IT/Security", score: 98, location: "Palo Alto, CA", trigger: "Hiring VP of Engineering", plan: "Scaling tech team rapidly. Pitch your dev tools now." },
-                    { id: Date.now()+1, company: "BlueOcean Retail", category: "Marketing", score: 89, location: "Miami, FL", trigger: "Rebranding Announced", plan: "Major brand overhaul. Needs creative agency support." }
+                    { id: Date.now(), company: "Solaris AI", category: "IT/Security", score: 98, location: "Palo Alto, CA", trigger: "Hiring VP of Engineering", plan: "Scaling tech team rapidly." },
+                    { id: Date.now()+1, company: "BlueOcean Retail", category: "Marketing", score: 89, location: "Miami, FL", trigger: "Rebranding Announced", plan: "Major brand overhaul." }
                 ];
                 
                 leads = [...newLeads, ...leads];
                 renderList();
-                
-                // Auto-select first new lead
                 selectLead(newLeads[0].id);
-
-                // Toast notification
-                showToast(`${newLeads.length} new signals found!`);
-
-            }, 3200);
+                
+                // Show Banner again if it was closed
+                // welcomeBanner.style.display = 'block'; 
+            }, 3000);
         }
 
-        function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full font-bold shadow-2xl animate-fade-in-up z-50 flex items-center gap-2';
-            toast.innerHTML = `<span class="material-symbols-outlined text-green-400">check_circle</span> ${msg}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        // --- Banner Logic ---
+        function dismissBanner() {
+            welcomeBanner.style.opacity = '0';
+            welcomeBanner.style.marginTop = `-${welcomeBanner.offsetHeight}px`;
+            setTimeout(() => {
+                welcomeBanner.style.display = 'none';
+            }, 500);
+        }
+
+        // --- Pricing Modal Logic ---
+        function openPricing() {
+            pricingModal.classList.remove('hidden');
+            pricingModal.classList.add('flex');
+            // Small trigger delay for fade in
+            setTimeout(() => {
+                pricingModal.classList.remove('opacity-0');
+                pricingContent.classList.remove('scale-95');
+                pricingContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closePricing() {
+            pricingModal.classList.add('opacity-0');
+            pricingContent.classList.remove('scale-100');
+            pricingContent.classList.add('scale-95');
+            setTimeout(() => {
+                pricingModal.classList.add('hidden');
+                pricingModal.classList.remove('flex');
+            }, 300);
+        }
+
+        function toggleBilling(btn) {
+            isAnnual = !isAnnual;
+            const circle = btn.querySelector('div');
+            circle.style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
+            
+            // Just visual feedback for now, would typically update price text
+        }
+
+        function selectPlan(plan) {
+            alert(`You selected the ${plan} plan! Redirecting to payment...`);
+            window.location.href = 'contact.html';
         }
 
         // --- Init ---
-        renderList();
+        // Animation Keyframes
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+            .animate-ticker { animation: ticker 20s linear infinite; }
+            .animate-ticker:hover { animation-play-state: paused; }
+        `;
+        document.head.appendChild(style);
+
+        fetchLeads();
         
         // Filter Logic
         document.querySelectorAll('.filter-btn').forEach(btn => {
