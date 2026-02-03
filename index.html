@@ -8,6 +8,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!-- Tailwind Config for Toss Design System -->
     <script>
         tailwind.config = {
@@ -220,7 +223,7 @@
                     <div class="mb-6 price-text" id="price-starter"><span class="text-4xl font-bold text-gray-900">$59.9</span> <span class="text-gray-400">/mo CAD</span></div>
                     <ul class="space-y-4 mb-8 flex-1">
                          <li class="flex items-center gap-3 text-gray-600"><span class="material-symbols-outlined text-blue-600">check_circle</span> See Company Meta Data</li>
-                         <li class="flex items-center gap-3 text-gray-400"><span class="material-symbols-outlined">lock</span> No AI Strategy</li>
+                         <li class="flex items-center gap-3 text-gray-400"><span class="material-symbols-outlined">lock</span> No Premium Insights</li>
                     </ul>
                     <button onclick="mockBilling('Basic')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors">Start Basic</button>
                 </div>
@@ -229,7 +232,7 @@
                     <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
                     <div class="mb-6 price-text" id="price-pro"><span class="text-4xl font-bold text-white">$159.9</span> <span class="text-gray-400">/mo CAD</span></div>
                     <ul class="space-y-4 mb-8 flex-1">
-                         <li class="flex items-center gap-3 text-white"><span class="material-symbols-outlined text-blue-500">check_circle</span> <strong>Full AI Strategy</strong></li>
+                         <li class="flex items-center gap-3 text-white"><span class="material-symbols-outlined text-blue-500">check_circle</span> <strong>Funding & Sales Fit</strong></li>
                          <li class="flex items-center gap-3 text-white"><span class="material-symbols-outlined text-blue-500">check_circle</span> Trigger Events</li>
                          <li class="flex items-center gap-3 text-gray-500"><span class="material-symbols-outlined">lock</span> No Direct Contacts</li>
                     </ul>
@@ -241,6 +244,7 @@
                     <div class="mb-6 price-text" id="price-growth"><span class="text-4xl font-bold text-gray-900">$259.9</span> <span class="text-gray-400">/mo CAD</span></div>
                     <ul class="space-y-4 mb-8 flex-1">
                          <li class="flex items-center gap-3 text-gray-600"><span class="material-symbols-outlined text-blue-600">check_circle</span> All Pro Features</li>
+                         <li class="flex items-center gap-3 text-gray-600"><span class="material-symbols-outlined text-blue-600">check_circle</span> <strong>Expert Recs & Persona</strong></li>
                          <li class="flex items-center gap-3 text-gray-600"><span class="material-symbols-outlined text-blue-600">check_circle</span> <strong>Direct Contact Info</strong></li>
                     </ul>
                     <button onclick="mockBilling('Ultra')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors">Get Ultra</button>
@@ -264,10 +268,10 @@
                  Basic User (Tests Blurs)
             </button>
             <button onclick="mockSupabase.auth.signIn('pro@example.com')" class="w-full bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold py-3.5 rounded-xl mb-3 flex items-center justify-center gap-3 transition-colors">
-                 Pro User (Sees Strategy)
+                 Pro User (Sees Insights)
             </button>
             <button onclick="mockSupabase.auth.signIn('ultra@example.com')" class="w-full bg-gray-900 text-white hover:bg-gray-800 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition-colors">
-                Ultra User (Sees Everything)
+                Ultra User (Sees everything)
             </button>
         </div>
     </div>
@@ -288,7 +292,7 @@
                     this.currentUser = { email, plan, id: 'user_' + Date.now() };
                     updateAuthUI();
                     closeModal('login-modal', 'login-content');
-                    if (activeId) selectLead(activeId); // Refresh view
+                    if (activeId) selectLead(activeId); 
                     showToast(`Signed in as ${plan} User`);
                 },
                 signOut: () => {
@@ -302,11 +306,62 @@
         }
         const mockSupabase = new MockSupabaseClient();
 
-        // --- Data ---
+        // --- Data (Enhanced) ---
         const LEAD_DATA = [
-            { id: 1, company: "TechFlow Inc.", category: "IT/Security", score: 94, location: "San Francisco", founded: "2015", size: "100+", revenue: "$15M", trigger: "Series B Funding ($30M)", action_plan: "Pitch scalable cloud security suite. Focus on compliance.", contact: { name: "Sarah Jones", title: "CTO", email: "sarah@techflow.io", phone: "+1 415-555-0123" } },
-            { id: 2, company: "GreenLeaf", category: "Interior/Office", score: 85, location: "Austin", founded: "2018", size: "50+", revenue: "$5M", trigger: "New Office Lease (15k sqft)", action_plan: "Offer ergonomic furniture packages + layout design.", contact: { name: "Mike Chen", title: "Ops Director", email: "mike@greenleaf.com", phone: "+1 512-555-0999" } },
-            { id: 3, company: "Nexus Mktg", category: "Marketing", score: 88, location: "NYC", founded: "2020", size: "20+", revenue: "$2M", trigger: "Hired new CMO", action_plan: "Propose AI-driven ad optimization tools.", contact: { name: "Jessica Day", title: "VP Marketing", email: "jess@nexus.nyc", phone: "+1 212-555-4000" } },
+            { 
+                id: 1, 
+                company: "TechFlow Inc.", 
+                category: "IT/Security", 
+                score: 94, 
+                scores: { urgency: 95, scale: 88, fit: 92 },
+                location: "San Francisco", 
+                founded: "2015", 
+                size: "100+", 
+                revenue: "$15M", 
+                trigger: "Series B Funding ($30M)", 
+                action_plan: "Pitch scalable cloud security suite. Focus on compliance.", 
+                funding_insight: "Recently raised $30M led by Sequoia. 40% earmarked for engineering expansion in Vancouver branch.",
+                sales_fit: "High fit for IT Services: Rapid scaling means they outgrew their current MSSP. They need enterprise-grade pentesting immediately.",
+                expert_rec: "Highlight your SOC 2 Type II certification. The CTO, Sarah, mentioned 'compliance fatigue' in a recent podcast.",
+                dm_persona: "Technical Founder. Value Speed > Cost. Doesn't like sales fluff. Use technical jargon.",
+                contact: { name: "Sarah Jones", title: "CTO", email: "sarah@techflow.io", phone: "+1 415-555-0123" } 
+            },
+            { 
+                id: 2, 
+                company: "GreenLeaf", 
+                category: "Interior/Office", 
+                score: 85,
+                scores: { urgency: 80, scale: 75, fit: 90 },
+                location: "Austin", 
+                founded: "2018", 
+                size: "50+", 
+                revenue: "$5M", 
+                trigger: "New Office Lease (15k sqft)", 
+                action_plan: "Offer ergonomic furniture packages + layout design.", 
+                funding_insight: "Self-funded profitability reached. Recent local grant for sustainable practices ($500k).",
+                sales_fit: "Medium fit for Interior: Focus on 'Green/Sustainable' angle. They are rebranding as eco-conscious.",
+                expert_rec: "Pitch 'Reclaimed Wood' custom desks. Their CEO posted about sustainability on LinkedIn last week.",
+                dm_persona: "Aesthetic-focused. Visuals matter more than specs. Bring samples.",
+                contact: { name: "Mike Chen", title: "Ops Director", email: "mike@greenleaf.com", phone: "+1 512-555-0999" } 
+            },
+            { 
+                id: 3, 
+                company: "Nexus Mktg", 
+                category: "Marketing", 
+                score: 88,
+                scores: { urgency: 90, scale: 60, fit: 95 },
+                location: "NYC", 
+                founded: "2020", 
+                size: "20+", 
+                revenue: "$2M", 
+                trigger: "Hired new CMO", 
+                action_plan: "Propose AI-driven ad optimization tools.", 
+                funding_insight: "Seed round extended. Bringing in strategic partners from AdTech.",
+                sales_fit: "Very High fit for MarTech: The new CMO (Jessica) used similar tools at her last unicorn exit.",
+                expert_rec: "Drop 'Campaign ROI' stats in the subject line. Jessica is data-obsessed.",
+                dm_persona: "Data-driven. Show me the metrics. Short attention span.",
+                contact: { name: "Jessica Day", title: "VP Marketing", email: "jess@nexus.nyc", phone: "+1 212-555-4000" } 
+            },
         ];
 
         // --- State ---
@@ -314,6 +369,7 @@
         let activeId = null;
         let activeCategory = 'ALL';
         let isAnnual = false;
+        let chartInstance = null;
 
         // --- UI Logic ---
         function updateAuthUI() {
@@ -321,8 +377,7 @@
             const user = mockSupabase.auth.user();
             
             if (user) {
-                // Show Plan Badge
-                let badgeColor = 'bg-gray-200 text-gray-700'; // Basic
+                let badgeColor = 'bg-gray-200 text-gray-700'; 
                 if (user.plan === 'Pro') badgeColor = 'bg-blue-100 text-blue-700';
                 if (user.plan === 'Ultra') badgeColor = 'bg-gray-900 text-white';
 
@@ -348,18 +403,16 @@
             const plan = user ? user.plan : 'Guest';
             
             // Logic Table
-            // Field: 'strategy' (Trigger + Plan) -> Needs Pro or Ultra
-            // Field: 'contact' -> Needs Ultra
-            
-            if (field === 'strategy') {
-                if (plan === 'Pro' || plan === 'Ultra') return true;
-                return false;
+            if (field === 'market_context') { // Investment & Fit
+                return ['Pro', 'Ultra'].includes(plan);
+            }
+            if (field === 'expert_strategy') { // Expert Rec & Persona (Ultra only)
+                return plan === 'Ultra';
             }
             if (field === 'contact') {
-                if (plan === 'Ultra') return true;
-                return false;
+                return plan === 'Ultra';
             }
-            return false;
+            return false; // Default
         }
 
         function renderList() {
@@ -368,7 +421,6 @@
             
             leads.forEach(lead => {
                 const isActive = lead.id === activeId;
-                // Diamond Priority Logic
                 const isDiamond = lead.score >= 90;
                 
                 const el = document.createElement('div');
@@ -402,17 +454,18 @@
             const lead = leads.find(l => l.id === id);
             
             const detail = document.getElementById('detail-view');
-            detail.innerHTML = ''; // Clear
+            detail.innerHTML = ''; 
 
-            const hasStrategy = checkAccess('strategy');
+            const hasMarket = checkAccess('market_context');
+            const hasExpert = checkAccess('expert_strategy');
             const hasContact = checkAccess('contact');
 
             setTimeout(() => {
                 detail.innerHTML = `
                     <div class="animate-fade-in-up pb-20">
                         <!-- Header -->
-                        <div class="flex items-start justify-between mb-8">
-                            <div>
+                        <div class="grid grid-cols-12 gap-8 mb-8">
+                            <div class="col-span-8">
                                 <div class="flex items-center gap-3 mb-3">
                                     <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">${lead.category}</span>
                                     ${lead.score >= 90 ? '<span class="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-blue-100"><span class="material-symbols-outlined text-[14px]">diamond</span> Top Priority</span>' : ''}
@@ -424,40 +477,86 @@
                                      <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">payments</span> ${lead.revenue}</span>
                                 </div>
                             </div>
-                            <div class="text-center bg-gray-50 p-5 rounded-[20px] border border-gray-100">
-                                <div class="text-xs text-gray-400 font-bold uppercase mb-1">Score</div>
-                                <div class="text-4xl font-bold text-blue-600">${lead.score}</div>
-                            </div>
-                        </div>
-
-                        <!-- Strategy Section (Blurred for Basic) -->
-                        <div class="grid grid-cols-2 gap-6 mb-8 relative">
-                            ${!hasStrategy ? `
-                                <div class="blur-overlay rounded-[24px]">
-                                    <span class="material-symbols-outlined text-gray-400 text-5xl mb-3">lock</span>
-                                    <h3 class="text-xl font-bold text-gray-900 mb-2">Unlock AI Strategy</h3>
-                                    <p class="text-gray-500 mb-4 text-center max-w-xs">Upgrade to <strong>Pro</strong> to see Trigger Events and Action Plans.</p>
-                                    <button onclick="scrollToPricing()" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-blue-600 transition-transform hover:scale-105 active:scale-95">Upgrade to Pro</button>
-                                </div>
-                            ` : ''}
                             
-                            <div class="bg-gray-50 p-6 rounded-[24px] border border-gray-100 ${!hasStrategy ? 'filter blur-sm opacity-50' : ''}">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <span class="material-symbols-outlined text-orange-500">bolt</span>
-                                    <h3 class="font-bold text-gray-900">Trigger Event</h3>
-                                </div>
-                                <p class="text-gray-700 font-medium leading-relaxed bg-white p-4 rounded-xl shadow-sm">${lead.trigger}</p>
-                            </div>
-                            <div class="bg-blue-50 p-6 rounded-[24px] border border-blue-100 ${!hasStrategy ? 'filter blur-sm opacity-50' : ''}">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <span class="material-symbols-outlined text-blue-600">psychology</span>
-                                    <h3 class="font-bold text-blue-900">AI Action Plan</h3>
-                                </div>
-                                <p class="text-blue-800 leading-relaxed">${lead.action_plan}</p>
+                            <!-- Diamond Score Visual -->
+                            <div class="col-span-4 bg-white rounded-[24px] border border-gray-100 p-2 shadow-sm relative h-40 w-full flex items-center justify-center">
+                                <canvas id="scoreChart"></canvas>
                             </div>
                         </div>
 
-                        <!-- Contact Section (Blurred for Pro/Basic) -->
+                        <!-- Basic Info (Always Visible) -->
+                        <div class="bg-gray-50 p-6 rounded-[24px] border border-gray-100 mb-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="material-symbols-outlined text-orange-500">bolt</span>
+                                <h3 class="font-bold text-gray-900">Trigger Event</h3>
+                            </div>
+                            <p class="text-gray-700 font-medium leading-relaxed bg-white p-4 rounded-xl shadow-sm">${lead.trigger}</p>
+                        </div>
+
+                        <!-- Premium Insights Section -->
+                        <div class="mb-8">
+                            <h3 class="text-blue-500 font-bold text-sm uppercase mb-4 tracking-wider flex items-center gap-2"><span class="material-symbols-outlined text-sm">auto_awesome</span> Premium Intelligence</h3>
+                            
+                            <div class="grid grid-cols-2 gap-6 relative">
+                                <!-- Market Context (Pro+) -->
+                                <div class="col-span-2 md:col-span-1 relative bg-white border border-gray-200 rounded-[24px] p-6 overflow-hidden transform transition-all hover:shadow-toss">
+                                     ${!hasMarket ? `
+                                        <div class="blur-overlay rounded-[24px]">
+                                            <span class="material-symbols-outlined text-gray-400 text-4xl mb-2">lock_open_right</span>
+                                            <h4 class="font-bold text-gray-900 mb-1">Market Context</h4>
+                                            <p class="text-xs text-center text-gray-500 mb-3 px-4">Investment news & Sales fit analysis</p>
+                                            <button onclick="scrollToPricing()" class="bg-blue-500 text-white text-xs font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600">Unlock w/ Pro</button>
+                                        </div>
+                                     ` : ''}
+                                    <div class="${!hasMarket ? 'filter blur-sm opacity-50' : ''}">
+                                        <div class="mb-6">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="text-green-500 material-symbols-outlined text-[20px]">trending_up</span>
+                                                <h4 class="font-bold text-gray-900 text-sm">Investment Insight</h4>
+                                            </div>
+                                            <p class="text-gray-600 text-sm leading-relaxed">${lead.funding_insight}</p>
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="text-blue-500 material-symbols-outlined text-[20px]">handshake</span>
+                                                <h4 class="font-bold text-gray-900 text-sm">Sales Fit Analysis</h4>
+                                            </div>
+                                            <p class="text-gray-600 text-sm leading-relaxed">${lead.sales_fit}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Expert Strategy (Ultra) -->
+                                <div class="col-span-2 md:col-span-1 relative bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-[24px] p-6 text-white overflow-hidden shadow-lg">
+                                     ${!hasExpert ? `
+                                        <div class="blur-overlay rounded-[24px]" style="background: rgba(30,30,30,0.6);">
+                                            <span class="material-symbols-outlined text-gray-300 text-4xl mb-2">diamond</span>
+                                            <h4 class="font-bold text-white mb-1">Expert Strategy</h4>
+                                            <p class="text-xs text-center text-gray-300 mb-3 px-4">Recs & Persona insights</p>
+                                            <button onclick="scrollToPricing()" class="bg-white text-gray-900 text-xs font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-gray-200">Unlock w/ Ultra</button>
+                                        </div>
+                                     ` : ''}
+                                    <div class="${!hasExpert ? 'filter blur-sm opacity-30' : ''}">
+                                        <div class="mb-6">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="text-yellow-400 material-symbols-outlined text-[20px]">lightbulb</span>
+                                                <h4 class="font-bold text-white text-sm">Expert Rec</h4>
+                                            </div>
+                                            <p class="text-gray-300 text-sm leading-relaxed border-l-2 border-yellow-400 pl-3">"${lead.expert_rec}"</p>
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="text-purple-400 material-symbols-outlined text-[20px]">face</span>
+                                                <h4 class="font-bold text-white text-sm">Decision Maker Persona</h4>
+                                            </div>
+                                            <p class="text-gray-300 text-sm leading-relaxed bg-white/10 p-3 rounded-lg">${lead.dm_persona}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Section (Ultra) -->
                         <div class="relative">
                              ${!hasContact ? `
                                 <div class="blur-overlay rounded-[24px]" style="background: rgba(242, 244, 246, 0.7);">
@@ -475,8 +574,8 @@
                                         <h3 class="text-xl font-bold text-gray-900">${lead.contact.name}</h3>
                                         <p class="text-gray-500 font-medium mb-1">${lead.contact.title}</p>
                                         <div class="flex gap-4 text-blue-600 font-bold text-sm">
-                                            <span>${lead.contact.email}</span>
-                                            <span>${lead.contact.phone}</span>
+                                            <a href="mailto:${lead.contact.email}" class="hover:underline">${lead.contact.email}</a>
+                                            <a href="tel:${lead.contact.phone}" class="hover:underline">${lead.contact.phone}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -485,17 +584,55 @@
 
                     </div>
                 `;
+                
+                // Initialize Chart
+                const ctx = document.getElementById('scoreChart');
+                if (window.chartInstance) window.chartInstance.destroy();
+                
+                window.chartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Urgency', 'Scale', 'Fit'],
+                        datasets: [{
+                            label: 'Lead Score',
+                            data: [lead.scores.urgency, lead.scores.scale, lead.scores.fit],
+                            fill: true,
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            pointBackgroundColor: 'rgb(59, 130, 246)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(59, 130, 246)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        elements: {
+                            line: { borderWidth: 2 }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: { display: false },
+                                suggestedMin: 0,
+                                suggestedMax: 100,
+                                ticks: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+
             }, 50);
         }
 
-        // --- Utils ---
+        // --- Utils --- (Same as before)
         function handleAuthClick() {
             const user = mockSupabase.auth.user();
-            if (user) {
-                // Already mocked sign out logic in UI directly or here
-            } else {
-                openModal('login-modal', 'login-content');
-            }
+            if (user) { /* signOut handled in UI */ } 
+            else { openModal('login-modal', 'login-content'); }
         }
         function openModal(mid, cid) {
             const m = document.getElementById(mid), c = document.getElementById(cid);
@@ -520,14 +657,13 @@
         function toggleBilling(btn) {
              isAnnual = !isAnnual;
              document.getElementById('pricing-toggle-circle').style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
-             // Simplified logic for this step to focus on Tier UI
+             // Simplified pricing update logic handled in previous steps, focusing on Tier UI here
         }
         function refreshLeads() {
              document.getElementById('refresh-icon').classList.add('animate-spin-fast');
              setTimeout(() => { document.getElementById('refresh-icon').classList.remove('animate-spin-fast'); leads.sort(() => Math.random() - 0.5); renderList(); }, 1000);
         }
 
-        // Init
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -537,7 +673,6 @@
         `;
         document.head.appendChild(style);
         
-        // News Ticker
         const news = ["TechFlow Inc. - Series B", "GreenLeaf - Office Move", "Nexus - New CMO"];
         document.getElementById('news-ticker').innerHTML = [...news, ...news].map(i => `<span class="mr-10 font-medium opacity-80">${i}</span>`).join('');
 
