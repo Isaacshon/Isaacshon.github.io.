@@ -81,6 +81,18 @@
         .fade-out {
             opacity: 0;
         }
+        /* Blur Overlays */
+        .blur-overlay {
+            position: absolute;
+            inset: 0;
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -110,10 +122,12 @@
                     </span>
                     <span class="text-xs font-bold text-gray-600">Live Signals</span>
                 </div>
-                <!-- Dynamic Auth Button -->
-                <button id="auth-btn" onclick="handleAuthClick()" class="bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-[12px] font-semibold text-sm transition-colors shadow-lg shadow-gray-900/20 flex items-center gap-2">
-                    Login
-                </button>
+                <!-- Auth / Plan Badge -->
+                <div id="auth-container">
+                    <button id="auth-btn" onclick="handleAuthClick()" class="bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-[12px] font-semibold text-sm transition-colors shadow-lg shadow-gray-900/20 flex items-center gap-2">
+                        Login
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -134,24 +148,6 @@
             <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-900 to-transparent"></div>
         </div>
 
-        <!-- Welcome Banner (Dismissible) -->
-        <div id="welcome-banner" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-8 rounded-[24px] shadow-toss mb-6 relative overflow-hidden shrink-0 transition-all duration-500">
-            <div class="relative z-10 flex justify-between items-start">
-                <div class="max-w-2xl">
-                    <h2 class="text-3xl font-bold mb-3">Knock on the right doors, at the right time.</h2>
-                    <p class="text-blue-100 text-lg mb-6 leading-relaxed">
-                        Eknoc is your <strong>AI Sales Development Representative</strong>. We track millions of data points to identify companies that are ready to buy <em>right now</em>.
-                    </p>
-                    <button onclick="dismissBanner()" class="text-sm font-semibold text-white bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm">
-                        Dismiss Intro
-                    </button>
-                </div>
-                <div class="hidden lg:block">
-                     <span class="material-symbols-outlined text-white/20 text-[180px] absolute -right-10 -bottom-20 rotate-12">rocket_launch</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Dashboard Toolbar -->
         <div class="flex justify-between items-end mb-6 shrink-0 z-20">
             <div>
@@ -162,7 +158,6 @@
                 <p class="text-gray-500 text-[15px]">Real-time buying intent signals tailored for you.</p>
             </div>
             <div class="flex gap-3">
-                <!-- Refresh Button -->
                 <button id="refresh-btn" onclick="refreshLeads()" class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-5 py-3 rounded-[16px] font-bold text-[15px] flex items-center gap-2 shadow-sm transition-all hover:scale-105 active:scale-95">
                     <span class="material-symbols-outlined" id="refresh-icon">sync</span>
                     Refresh
@@ -180,17 +175,13 @@
                         <button class="filter-btn active bg-gray-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold transition-colors" data-category="ALL">All</button>
                         <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="Marketing">Marketing</button>
                         <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="IT/Security">IT</button>
-                        <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="Interior/Office">Interior</button>
                     </div>
-                    <a href="#pricing-section" class="ml-2 text-xs font-bold text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-full transition-colors flex items-center gap-1 scroll-smooth">
-                        <span class="material-symbols-outlined text-[14px]">diamond</span> Upgrade
-                    </a>
                 </div>
                 <!-- List -->
                 <div id="leads-list" class="flex-1 overflow-y-auto p-2 space-y-2"></div>
             </div>
 
-            <!-- Right Panel: Lead Detail -->
+            <!-- Right Panel: Lead Detail (Tiered UI) -->
             <div class="col-span-12 lg:col-span-8 bg-white rounded-[24px] shadow-toss border border-gray-100 overflow-hidden relative hidden lg:block">
                 <div id="detail-view" class="h-full overflow-y-auto p-10 flex flex-col">
                     <!-- Empty State -->
@@ -199,7 +190,7 @@
                             <span class="material-symbols-outlined text-blue-500 text-5xl">ads_click</span>
                         </div>
                         <h2 class="text-2xl font-bold text-gray-900 mb-2">Select a Signal</h2>
-                        <p class="text-gray-500">Click on a lead from the list to view detailed insights.</p>
+                        <p class="text-gray-500">Select a lead to view Tier-specific insights.</p>
                     </div>
                 </div>
             </div>
@@ -223,29 +214,36 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Starter -->
+                <!-- Data: Starter -->
                 <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Starter</h3>
-                    <div class="mb-6 price-text" id="price-starter">
-                        <span class="text-4xl font-bold text-gray-900">$59.9</span> <span class="text-gray-400">/mo CAD</span>
-                    </div>
-                    <button onclick="mockBiling('Starter')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors">Start Free Trial</button>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Basic</h3>
+                    <div class="mb-6 price-text" id="price-starter"><span class="text-4xl font-bold text-gray-900">$59.9</span> <span class="text-gray-400">/mo CAD</span></div>
+                    <ul class="space-y-4 mb-8 flex-1">
+                         <li class="flex items-center gap-3 text-gray-600"><span class="material-symbols-outlined text-blue-600">check_circle</span> See Company Meta Data</li>
+                         <li class="flex items-center gap-3 text-gray-400"><span class="material-symbols-outlined">lock</span> No AI Strategy</li>
+                    </ul>
+                    <button onclick="mockBilling('Basic')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors">Start Basic</button>
                 </div>
-                <!-- Pro -->
+                <!-- Data: Pro -->
                 <div class="bg-gray-900 p-8 rounded-[32px] border border-gray-800 flex flex-col relative shadow-2xl transform md:-translate-y-4">
                     <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
-                    <div class="mb-6 price-text" id="price-pro">
-                        <span class="text-4xl font-bold text-white">$159.9</span> <span class="text-gray-400">/mo CAD</span>
-                    </div>
-                    <button onclick="mockBiling('Pro')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-2xl hover:bg-blue-600 transition-colors">Get Started</button>
+                    <div class="mb-6 price-text" id="price-pro"><span class="text-4xl font-bold text-white">$159.9</span> <span class="text-gray-400">/mo CAD</span></div>
+                    <ul class="space-y-4 mb-8 flex-1">
+                         <li class="flex items-center gap-3 text-white"><span class="material-symbols-outlined text-blue-500">check_circle</span> <strong>Full AI Strategy</strong></li>
+                         <li class="flex items-center gap-3 text-white"><span class="material-symbols-outlined text-blue-500">check_circle</span> Trigger Events</li>
+                         <li class="flex items-center gap-3 text-gray-500"><span class="material-symbols-outlined">lock</span> No Direct Contacts</li>
+                    </ul>
+                    <button onclick="mockBilling('Pro')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-2xl hover:bg-blue-600 transition-colors">Get Pro</button>
                 </div>
-                <!-- Ultra -->
+                <!-- Data: Ultra -->
                 <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Ultra</h3>
-                    <div class="mb-6 price-text" id="price-growth">
-                        <span class="text-4xl font-bold text-gray-900">$259.9</span> <span class="text-gray-400">/mo CAD</span>
-                    </div>
-                    <button onclick="mockBiling('Ultra')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors">Contact Sales</button>
+                    <div class="mb-6 price-text" id="price-growth"><span class="text-4xl font-bold text-gray-900">$259.9</span> <span class="text-gray-400">/mo CAD</span></div>
+                    <ul class="space-y-4 mb-8 flex-1">
+                         <li class="flex items-center gap-3 text-gray-600"><span class="material-symbols-outlined text-blue-600">check_circle</span> All Pro Features</li>
+                         <li class="flex items-center gap-3 text-gray-600"><span class="material-symbols-outlined text-blue-600">check_circle</span> <strong>Direct Contact Info</strong></li>
+                    </ul>
+                    <button onclick="mockBilling('Ultra')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors">Get Ultra</button>
                 </div>
             </div>
         </div>
@@ -254,226 +252,147 @@
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
         <div class="bg-white w-full max-w-md rounded-[32px] p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="login-content">
-            <button onclick="closeLogin()" class="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900">
+            <button onclick="closeModal('login-modal', 'login-content')" class="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900">
                 <span class="material-symbols-outlined">close</span>
             </button>
             <div class="text-center mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-1">Welcome to Eknoc</h2>
-                <p class="text-gray-500 text-sm">Sign in to access your sales signals.</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-1">Sign In</h2>
+                <p class="text-gray-500 text-sm">Select a persona to test Tiered Access.</p>
             </div>
             
-            <button onclick="login('google', 'Pro')" class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold py-3.5 rounded-xl mb-3 flex items-center justify-center gap-3 transition-colors">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
-                Continue with Google (Pro Plan)
+            <button onclick="mockSupabase.auth.signIn('basic@example.com')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-3.5 rounded-xl mb-3 flex items-center justify-center gap-3 transition-colors">
+                 Basic User (Tests Blurs)
             </button>
-            <button onclick="login('apple', 'Starter')" class="w-full bg-black text-white hover:bg-gray-800 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition-colors">
-                <img src="https://www.svgrepo.com/show/508768/apple.svg" class="w-5 h-5 invert" alt="Apple">
-                Continue with Apple (Starter Plan)
+            <button onclick="mockSupabase.auth.signIn('pro@example.com')" class="w-full bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold py-3.5 rounded-xl mb-3 flex items-center justify-center gap-3 transition-colors">
+                 Pro User (Sees Strategy)
             </button>
-            
-            <p class="text-xs text-center text-gray-400 mt-6">By continuing, you agree to our Terms of Service.</p>
-        </div>
-    </div>
-
-    <!-- Account Modal -->
-    <div id="account-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
-        <div class="bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="account-content">
-            <button onclick="closeAccount()" class="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900">
-                <span class="material-symbols-outlined">close</span>
+            <button onclick="mockSupabase.auth.signIn('ultra@example.com')" class="w-full bg-gray-900 text-white hover:bg-gray-800 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition-colors">
+                Ultra User (Sees Everything)
             </button>
-            
-            <div class="flex flex-col items-center mb-6">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-4 border-2 border-white shadow-md">
-                    <span id="user-avatar-initial" class="font-bold text-gray-500">?</span>
-                </div>
-                <h2 id="user-name-display" class="text-xl font-bold text-gray-900">User</h2>
-                <span id="user-email-display" class="text-sm text-gray-500">user@example.com</span>
-            </div>
-
-            <div class="bg-gray-50 rounded-2xl p-4 mb-6">
-                <div class="text-xs font-bold text-gray-400 uppercase mb-1">Current Plan</div>
-                <div class="flex justify-between items-center">
-                    <span id="user-plan-display" class="text-lg font-bold text-blue-600">Free</span>
-                    <button onclick="mockManageSubscription()" class="text-xs font-semibold text-gray-900 underline hover:text-blue-500">Manage</button>
-                </div>
-            </div>
-            
-            <button onclick="logout()" class="w-full bg-red-50 text-red-500 hover:bg-red-100 font-bold py-3 rounded-xl transition-colors">Log Out</button>
         </div>
     </div>
 
     <!-- Scripts -->
     <script>
-        // --- Mock Data ---
-        const MOCK_LEADS = [
-            { id: 1, company: "TechFlow Inc.", category: "IT/Security", score: 92, location: "San Francisco, CA", founded: "2015", size: "100-250", revenue: "$15M", trigger: "Series B Funding ($30M)", plan: "Expanding engineering team.", contact: { name: "Sarah Jones", title: "CTO", email: "sarah@techflow.io", phone: "+1 415-555-0123" } },
-            { id: 2, company: "GreenLeaf Studios", category: "Interior/Office", score: 85, location: "Austin, TX", founded: "2018", size: "50-100", revenue: "$5M", trigger: "New Office Lease", plan: "Relocating office.", contact: { name: "Mike Chen", title: "Ops Director", email: "mike@greenleaf.com", phone: "+1 512-555-0999" } },
-            { id: 3, company: "Nexus Marketing", category: "Marketing", score: 88, location: "New York, NY", founded: "2020", size: "10-50", revenue: "$2M", trigger: "CMO Hired", plan: "New CMO.", contact: { name: "Jessica Day", title: "VP Marketing", email: "jess@nexus.nyc", phone: "+1 212-555-4000" } },
-            { id: 4, company: "Apex Logistics", category: "General Business", score: 76, location: "Chicago, IL", founded: "1998", size: "500-1000", revenue: "$80M", trigger: "Supply Chain Expansion", plan: "New distribution center.", contact: { name: "Robert Fox", title: "Head of Logistics", email: "rob@apexlog.com", phone: "+1 312-555-8888" } },
+        // --- Mock Supabase Client ---
+        class MockSupabaseClient {
+            constructor() {
+                this.currentUser = null;
+            }
+            auth = {
+                signIn: (email) => {
+                    let plan = 'Basic';
+                    if (email.includes('pro')) plan = 'Pro';
+                    if (email.includes('ultra')) plan = 'Ultra';
+                    
+                    this.currentUser = { email, plan, id: 'user_' + Date.now() };
+                    updateAuthUI();
+                    closeModal('login-modal', 'login-content');
+                    if (activeId) selectLead(activeId); // Refresh view
+                    showToast(`Signed in as ${plan} User`);
+                },
+                signOut: () => {
+                    this.currentUser = null;
+                    updateAuthUI();
+                    if (activeId) selectLead(activeId);
+                    showToast('Signed out');
+                },
+                user: () => this.currentUser
+            }
+        }
+        const mockSupabase = new MockSupabaseClient();
+
+        // --- Data ---
+        const LEAD_DATA = [
+            { id: 1, company: "TechFlow Inc.", category: "IT/Security", score: 94, location: "San Francisco", founded: "2015", size: "100+", revenue: "$15M", trigger: "Series B Funding ($30M)", action_plan: "Pitch scalable cloud security suite. Focus on compliance.", contact: { name: "Sarah Jones", title: "CTO", email: "sarah@techflow.io", phone: "+1 415-555-0123" } },
+            { id: 2, company: "GreenLeaf", category: "Interior/Office", score: 85, location: "Austin", founded: "2018", size: "50+", revenue: "$5M", trigger: "New Office Lease (15k sqft)", action_plan: "Offer ergonomic furniture packages + layout design.", contact: { name: "Mike Chen", title: "Ops Director", email: "mike@greenleaf.com", phone: "+1 512-555-0999" } },
+            { id: 3, company: "Nexus Mktg", category: "Marketing", score: 88, location: "NYC", founded: "2020", size: "20+", revenue: "$2M", trigger: "Hired new CMO", action_plan: "Propose AI-driven ad optimization tools.", contact: { name: "Jessica Day", title: "VP Marketing", email: "jess@nexus.nyc", phone: "+1 212-555-4000" } },
         ];
 
-        // --- Prices State ---
-        const PRICES = {
-            monthly: { starter: 59.9, pro: 159.9, growth: 259.9 },
-            annual: { starter: 47.9, pro: 127.9, growth: 207.9 }
-        };
-
         // --- State ---
-        let leads = [...MOCK_LEADS];
+        let leads = [...LEAD_DATA];
         let activeId = null;
         let activeCategory = 'ALL';
-        let currentUser = null; 
         let isAnnual = false;
 
-        // --- Auth Logic ---
-        function handleAuthClick() {
-            if (currentUser) {
-                // Open Account Modal
-                document.getElementById('user-name-display').innerText = currentUser.name;
-                document.getElementById('user-email-display').innerText = currentUser.provider === 'google' ? 'user@gmail.com' : 'user@icloud.com';
-                document.getElementById('user-plan-display').innerText = currentUser.plan;
-                document.getElementById('user-avatar-initial').innerText = currentUser.name[0];
-                
-                openModal('account-modal', 'account-content');
+        // --- UI Logic ---
+        function updateAuthUI() {
+            const container = document.getElementById('auth-container');
+            const user = mockSupabase.auth.user();
+            
+            if (user) {
+                // Show Plan Badge
+                let badgeColor = 'bg-gray-200 text-gray-700'; // Basic
+                if (user.plan === 'Pro') badgeColor = 'bg-blue-100 text-blue-700';
+                if (user.plan === 'Ultra') badgeColor = 'bg-gray-900 text-white';
+
+                container.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${badgeColor}">${user.plan}</span>
+                        <div onclick="mockSupabase.auth.signOut()" class="w-9 h-9 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300">
+                             <span class="material-symbols-outlined text-[18px]">logout</span>
+                        </div>
+                    </div>
+                `;
             } else {
-                openModal('login-modal', 'login-content');
+                container.innerHTML = `
+                    <button onclick="openModal('login-modal', 'login-content')" class="bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-[12px] font-semibold text-sm transition-colors shadow-lg shadow-gray-900/20 flex items-center gap-2">
+                        Login
+                    </button>
+                `;
             }
         }
 
-        function openModal(modalId, contentId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(contentId);
-            modal.classList.remove('hidden', 'flex');
-            modal.classList.add('flex');
-            // Small delay for transition
-            requestAnimationFrame(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            });
+        function checkAccess(field) {
+            const user = mockSupabase.auth.user();
+            const plan = user ? user.plan : 'Guest';
+            
+            // Logic Table
+            // Field: 'strategy' (Trigger + Plan) -> Needs Pro or Ultra
+            // Field: 'contact' -> Needs Ultra
+            
+            if (field === 'strategy') {
+                if (plan === 'Pro' || plan === 'Ultra') return true;
+                return false;
+            }
+            if (field === 'contact') {
+                if (plan === 'Ultra') return true;
+                return false;
+            }
+            return false;
         }
 
-        function closeLogin() { closeModal('login-modal', 'login-content'); }
-        function closeAccount() { closeModal('account-modal', 'account-content'); }
-
-        function closeModal(modalId, contentId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(contentId);
-            modal.classList.add('opacity-0'); 
-            content.classList.remove('scale-100'); 
-            content.classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
-        }
-
-        function login(provider, demoPlan) {
-            currentUser = {
-                name: provider === 'google' ? 'Kim Min-su' : 'John Doe',
-                provider: provider,
-                plan: demoPlan
-            };
-            
-            // Update UI Header
-            const authBtn = document.getElementById('auth-btn');
-            authBtn.innerText = 'My Account';
-            authBtn.classList.remove('bg-gray-900', 'text-white');
-            authBtn.classList.add('bg-white', 'text-gray-900', 'border', 'border-gray-200');
-            
-            showToast(`Logged in successfully as ${currentUser.plan} member!`);
-            closeLogin();
-            
-            if (activeId) selectLead(activeId); // Refresh view
-        }
-
-        function logout() {
-            currentUser = null;
-            const authBtn = document.getElementById('auth-btn');
-            authBtn.innerText = 'Login';
-            authBtn.classList.add('bg-gray-900', 'text-white');
-            authBtn.classList.remove('bg-white', 'text-gray-900', 'border', 'border-gray-200');
-            
-            closeAccount();
-            showToast('Logged out.');
-            
-            if (activeId) selectLead(activeId); // Refresh view
-        }
-
-        function mockManageSubscription() {
-            alert('Redirecting to Stripe Customer Portal...');
-        }
-        
-        function mockBiling(plan) {
-            alert(`Initiating checkout for ${plan} plan...`);
-        }
-
-        // --- Pricing Toggle Logic ---
-        function toggleBilling(btn) {
-            isAnnual = !isAnnual;
-            const circle = document.getElementById('pricing-toggle-circle');
-            
-            // 1. Animate Switch
-            circle.style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
-            
-            // 2. Animate Numbers (Fade Out -> Change -> Fade In)
-            const ids = ['price-starter', 'price-pro', 'price-growth'];
-            const keys = ['starter', 'pro', 'growth'];
-            
-            ids.forEach(id => document.getElementById(id).classList.add('fade-out'));
-            
-            setTimeout(() => {
-                const dataset = isAnnual ? PRICES.annual : PRICES.monthly;
-                const period = isAnnual ? '/yr' : '/mo';
-                
-                keys.forEach((key, idx) => {
-                    const el = document.getElementById(ids[idx]);
-                    const val = dataset[key];
-                    // Update content
-                    const colorClass = key === 'pro' ? 'text-white' : 'text-gray-900';
-                    const subColor = 'text-gray-400';
-                    el.innerHTML = `<span class="text-4xl font-bold ${colorClass}">$${val}</span> <span class="${subColor}">${period} CAD</span>`;
-                    
-                    el.classList.remove('fade-out');
-                });
-            }, 200); // Wait for fade out
-        }
-
-        // --- Refresh Logic ---
-        function refreshLeads() {
-            const icon = document.getElementById('refresh-icon');
-            icon.classList.add('animate-spin-fast');
-            
-            setTimeout(() => {
-                icon.classList.remove('animate-spin-fast');
-                leads.sort(() => Math.random() - 0.5);
-                renderList();
-                showToast("Signals updated.");
-            }, 1000);
-        }
-
-        // --- Render List ---
-        const listContainer = document.getElementById('leads-list');
-        const detailContainer = document.getElementById('detail-view');
-        
         function renderList() {
-            listContainer.innerHTML = '';
-            const filtered = activeCategory === 'ALL' ? leads : leads.filter(l => l.category === activeCategory);
+            const list = document.getElementById('leads-list');
+            list.innerHTML = '';
             
-            filtered.forEach(lead => {
+            leads.forEach(lead => {
                 const isActive = lead.id === activeId;
+                // Diamond Priority Logic
+                const isDiamond = lead.score >= 90;
+                
                 const el = document.createElement('div');
-                el.className = `p-5 rounded-[16px] cursor-pointer transition-all border ${isActive ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-white border-transparent hover:bg-gray-50'}`;
+                el.className = `p-5 rounded-[16px] cursor-pointer transition-all border relative overflow-hidden ${isActive ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-white border-transparent hover:bg-gray-50'}`;
                 el.onclick = () => selectLead(lead.id);
+                
+                let diamondBadge = '';
+                if (isDiamond) {
+                    diamondBadge = `<div class="absolute top-0 right-0 bg-gradient-to-bl from-blue-400 to-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl shadow-sm z-10">DIAMOND</div>`;
+                }
+
                 el.innerHTML = `
+                    ${diamondBadge}
                     <div class="flex justify-between mb-2">
                         <span class="text-xs font-bold ${isActive ? 'text-blue-600' : 'text-gray-500'} uppercase tracking-wide">${lead.category}</span>
                         <span class="text-xs text-gray-400">${lead.location}</span>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg mb-1">${lead.company}</h3>
                     <div class="flex items-center gap-2">
-                        <div class="h-1.5 w-1.5 rounded-full ${lead.score > 90 ? 'bg-red-500' : 'bg-blue-500'}"></div>
+                        <div class="h-1.5 w-1.5 rounded-full ${lead.score > 90 ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]' : 'bg-gray-400'}"></div>
                         <span class="text-sm text-gray-600 font-medium">Score: ${lead.score}</span>
                     </div>
                 `;
-                listContainer.appendChild(el);
+                list.appendChild(el);
             });
         }
 
@@ -481,116 +400,134 @@
             activeId = id;
             renderList();
             const lead = leads.find(l => l.id === id);
-            if (!lead) return;
+            
+            const detail = document.getElementById('detail-view');
+            detail.innerHTML = ''; // Clear
 
-            const isUnlocked = currentUser && (currentUser.plan === 'Pro' || currentUser.plan === 'Growth');
+            const hasStrategy = checkAccess('strategy');
+            const hasContact = checkAccess('contact');
 
-            detailContainer.innerHTML = '';
             setTimeout(() => {
-                detailContainer.innerHTML = `
-                    <div class="animate-fade-in-up">
-                        <div class="flex items-start justify-between mb-6">
+                detail.innerHTML = `
+                    <div class="animate-fade-in-up pb-20">
+                        <!-- Header -->
+                        <div class="flex items-start justify-between mb-8">
                             <div>
                                 <div class="flex items-center gap-3 mb-3">
                                     <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">${lead.category}</span>
-                                    <span class="text-gray-400 text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> ${lead.location}</span>
+                                    ${lead.score >= 90 ? '<span class="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-blue-100"><span class="material-symbols-outlined text-[14px]">diamond</span> Top Priority</span>' : ''}
                                 </div>
                                 <h1 class="text-4xl font-bold text-gray-900 mb-2">${lead.company}</h1>
-                                <p class="text-gray-500 text-lg">Signal detected 2 hours ago</p>
+                                <div class="flex gap-4 text-gray-500 text-sm font-medium mt-4">
+                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">calendar_month</span> ${lead.founded}</span>
+                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">groups</span> ${lead.size}</span>
+                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">payments</span> ${lead.revenue}</span>
+                                </div>
                             </div>
-                            <div class="text-center bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                <div class="text-sm text-gray-400 font-bold uppercase mb-1">Lead Score</div>
-                                <div class="text-4xl font-bold text-blue-500">${lead.score}</div>
+                            <div class="text-center bg-gray-50 p-5 rounded-[20px] border border-gray-100">
+                                <div class="text-xs text-gray-400 font-bold uppercase mb-1">Score</div>
+                                <div class="text-4xl font-bold text-blue-600">${lead.score}</div>
                             </div>
                         </div>
 
-                         <div class="flex gap-4 mb-8">
-                             <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
-                                <span class="material-symbols-outlined text-gray-400">calendar_month</span>
-                                <div>
-                                    <div class="text-xs text-gray-400 font-bold uppercase">Founded</div>
-                                    <div class="text-sm font-bold text-gray-900">${lead.founded}</div>
+                        <!-- Strategy Section (Blurred for Basic) -->
+                        <div class="grid grid-cols-2 gap-6 mb-8 relative">
+                            ${!hasStrategy ? `
+                                <div class="blur-overlay rounded-[24px]">
+                                    <span class="material-symbols-outlined text-gray-400 text-5xl mb-3">lock</span>
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">Unlock AI Strategy</h3>
+                                    <p class="text-gray-500 mb-4 text-center max-w-xs">Upgrade to <strong>Pro</strong> to see Trigger Events and Action Plans.</p>
+                                    <button onclick="scrollToPricing()" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-blue-600 transition-transform hover:scale-105 active:scale-95">Upgrade to Pro</button>
                                 </div>
-                            </div>
-                            <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
-                                <span class="material-symbols-outlined text-gray-400">groups</span>
-                                <div>
-                                    <div class="text-xs text-gray-400 font-bold uppercase">Size</div>
-                                    <div class="text-sm font-bold text-gray-900">${lead.size}</div>
-                                </div>
-                            </div>
-                             <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
-                                <span class="material-symbols-outlined text-gray-400">payments</span>
-                                <div>
-                                    <div class="text-xs text-gray-400 font-bold uppercase">Revenue</div>
-                                    <div class="text-sm font-bold text-gray-900">${lead.revenue}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-6 mb-8">
-                            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                            ` : ''}
+                            
+                            <div class="bg-gray-50 p-6 rounded-[24px] border border-gray-100 ${!hasStrategy ? 'filter blur-sm opacity-50' : ''}">
                                 <div class="flex items-center gap-3 mb-3">
                                     <span class="material-symbols-outlined text-orange-500">bolt</span>
                                     <h3 class="font-bold text-gray-900">Trigger Event</h3>
                                 </div>
-                                <p class="text-gray-700 font-medium leading-relaxed bg-white p-4 rounded-xl shadow-sm border border-gray-100">${lead.trigger}</p>
+                                <p class="text-gray-700 font-medium leading-relaxed bg-white p-4 rounded-xl shadow-sm">${lead.trigger}</p>
                             </div>
-                            <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                            <div class="bg-blue-50 p-6 rounded-[24px] border border-blue-100 ${!hasStrategy ? 'filter blur-sm opacity-50' : ''}">
                                 <div class="flex items-center gap-3 mb-3">
                                     <span class="material-symbols-outlined text-blue-600">psychology</span>
-                                    <h3 class="font-bold text-blue-900">AI Recommendation</h3>
+                                    <h3 class="font-bold text-blue-900">AI Action Plan</h3>
                                 </div>
-                                <p class="text-blue-800 leading-relaxed">${lead.plan}</p>
+                                <p class="text-blue-800 leading-relaxed">${lead.action_plan}</p>
                             </div>
                         </div>
 
-                        ${isUnlocked ? `
-                            <!-- Unlocked View -->
-                            <div class="bg-[#F2F4F6] border border-green-200 rounded-2xl p-6 relative overflow-hidden">
-                                <div class="flex items-center gap-3 mb-4">
-                                     <span class="material-symbols-outlined text-green-600 bg-green-100 p-2 rounded-full">lock_open</span>
-                                     <h3 class="font-bold text-gray-900 text-lg">Contact Unlocked</h3>
+                        <!-- Contact Section (Blurred for Pro/Basic) -->
+                        <div class="relative">
+                             ${!hasContact ? `
+                                <div class="blur-overlay rounded-[24px]" style="background: rgba(242, 244, 246, 0.7);">
+                                    <span class="material-symbols-outlined text-gray-400 text-5xl mb-3">key</span>
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">Direct Contact Access</h3>
+                                    <p class="text-gray-500 mb-4 text-center max-w-xs">Upgrade to <strong>Ultra</strong> to get direct phone numbers and emails.</p>
+                                    <button onclick="scrollToPricing()" class="bg-gray-900 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-gray-800 transition-transform hover:scale-105 active:scale-95">Upgrade to Ultra</button>
                                 </div>
-                                <div class="bg-white p-4 rounded-xl border border-gray-200 flex items-start justify-between shadow-sm">
+                            ` : ''}
+
+                            <div class="bg-white border border-gray-200 rounded-[24px] p-6 ${!hasContact ? 'filter blur-md opacity-40 select-none' : ''}">
+                                <div class="flex items-center gap-4">
+                                    <img src="https://ui-avatars.com/api/?name=${lead.contact.name}&background=random" class="w-16 h-16 rounded-full">
                                     <div>
-                                        <h4 class="font-bold text-lg text-gray-900">${lead.contact.name}</h4>
-                                        <p class="text-gray-500 text-sm mb-2">${lead.contact.title}</p>
-                                        <div class="flex gap-4 text-sm text-blue-600 font-medium">
-                                            <a href="mailto:${lead.contact.email}" class="hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">mail</span> ${lead.contact.email}</a>
-                                            <a href="tel:${lead.contact.phone}" class="hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">call</span> ${lead.contact.phone}</a>
+                                        <h3 class="text-xl font-bold text-gray-900">${lead.contact.name}</h3>
+                                        <p class="text-gray-500 font-medium mb-1">${lead.contact.title}</p>
+                                        <div class="flex gap-4 text-blue-600 font-bold text-sm">
+                                            <span>${lead.contact.email}</span>
+                                            <span>${lead.contact.phone}</span>
                                         </div>
                                     </div>
-                                    <img src="https://ui-avatars.com/api/?name=${lead.contact.name}&background=random" class="rounded-full w-12 h-12">
                                 </div>
                             </div>
-                        ` : `
-                            <!-- Locked View -->
-                            <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm relative overflow-hidden group">
-                               <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                               <span class="material-symbols-outlined text-gray-300 text-6xl mb-4 block">lock_person</span>
-                               <h3 class="text-xl font-bold text-gray-900 mb-2">Decision Makers Hidden</h3>
-                               <p class="text-gray-500 mb-6">Unlock to see CEO, CTO, and VP of Sales contacts.</p>
-                               <button onclick="document.getElementById('pricing-section').scrollIntoView({behavior: 'smooth'})" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95 relative z-10">
-                                    View Pricing
-                               </button>
-                            </div>
-                        `}
+                        </div>
+
                     </div>
                 `;
             }, 50);
         }
 
+        // --- Utils ---
+        function handleAuthClick() {
+            const user = mockSupabase.auth.user();
+            if (user) {
+                // Already mocked sign out logic in UI directly or here
+            } else {
+                openModal('login-modal', 'login-content');
+            }
+        }
+        function openModal(mid, cid) {
+            const m = document.getElementById(mid), c = document.getElementById(cid);
+            m.classList.remove('hidden', 'flex'); m.classList.add('flex');
+            requestAnimationFrame(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); c.classList.add('scale-100'); });
+        }
+        function closeModal(mid, cid) {
+            const m = document.getElementById(mid), c = document.getElementById(cid);
+            m.classList.add('opacity-0'); c.classList.remove('scale-100'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+        }
+        function scrollToPricing() {
+            document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' });
+        }
         function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full font-bold shadow-2xl animate-fade-in-up z-[200] flex items-center gap-2';
-            toast.innerHTML = `<span class="material-symbols-outlined text-green-400">check_circle</span> ${msg}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+             const t = document.createElement('div');
+             t.className = 'fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full font-bold shadow-2xl animate-fade-in-up z-[200] flex items-center gap-2';
+             t.innerHTML = `<span class="material-symbols-outlined text-green-400">check_circle</span> ${msg}`;
+             document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+        }
+        function mockBilling(plan) { alert('Checkout flow for ' + plan); }
+        function toggleBilling(btn) {
+             isAnnual = !isAnnual;
+             document.getElementById('pricing-toggle-circle').style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
+             // Simplified logic for this step to focus on Tier UI
+        }
+        function refreshLeads() {
+             document.getElementById('refresh-icon').classList.add('animate-spin-fast');
+             setTimeout(() => { document.getElementById('refresh-icon').classList.remove('animate-spin-fast'); leads.sort(() => Math.random() - 0.5); renderList(); }, 1000);
         }
 
-        // --- Init ---
-        // Animation Keyframes
+        // Init
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -599,21 +536,12 @@
             .animate-ticker:hover { animation-play-state: paused; }
         `;
         document.head.appendChild(style);
-
-        // Ticker content
-        const newsItems = ["TechFlow Inc. raised $30M Series B · 2m ago", "Shopify announces new Toronto HQ · 5m ago", "Samsung Biologics expands plant · 12m ago"];
-        const ticker = document.getElementById('news-ticker');
-        ticker.innerHTML = [...newsItems, ...newsItems].map(item => `<span class="opacity-80 hover:opacity-100 hover:text-blue-400 transition-colors cursor-pointer mr-10">• ${item}</span>`).join('');
+        
+        // News Ticker
+        const news = ["TechFlow Inc. - Series B", "GreenLeaf - Office Move", "Nexus - New CMO"];
+        document.getElementById('news-ticker').innerHTML = [...news, ...news].map(i => `<span class="mr-10 font-medium opacity-80">${i}</span>`).join('');
 
         renderList();
-        
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-gray-900', 'text-white'); b.classList.add('bg-white', 'text-gray-600'); });
-                btn.classList.remove('bg-gray-100', 'text-gray-600'); btn.classList.add('bg-gray-900', 'text-white');
-                activeCategory = btn.dataset.category; renderList();
-            });
-        });
 
     </script>
 </body>
