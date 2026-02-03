@@ -48,6 +48,7 @@
                     },
                     animation: {
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-fast': 'spin 0.7s linear infinite',
                     }
                 }
             }
@@ -70,7 +71,6 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* Smooth Scroll */
         html {
             scroll-behavior: smooth;
         }
@@ -103,15 +103,15 @@
                     </span>
                     <span class="text-xs font-bold text-gray-600">Live Signals</span>
                 </div>
-                <button class="bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-[12px] font-semibold text-sm transition-colors shadow-lg shadow-gray-900/20">
-                    My Account
+                <!-- Dynamic Auth Button -->
+                <button id="auth-btn" onclick="handleAuthClick()" class="bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-[12px] font-semibold text-sm transition-colors shadow-lg shadow-gray-900/20 flex items-center gap-2">
+                    Login
                 </button>
             </div>
         </div>
     </header>
 
     <!-- Main Dashboard Section -->
-    <!-- Changed h-screen to min-h-screen to allow scrolling -->
     <main class="max-w-screen-2xl mx-auto pt-[80px] px-8 flex flex-col min-h-screen mb-20" id="dashboard-top">
         
         <!-- Interactive Ticker -->
@@ -123,19 +123,17 @@
                 </span>
                 LIVE
             </span>
-            <div class="whitespace-nowrap flex gap-10 animate-ticker" id="news-ticker">
-                <!-- Injected via JS -->
-            </div>
+            <div class="whitespace-nowrap flex gap-10 animate-ticker" id="news-ticker"></div>
             <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-900 to-transparent"></div>
         </div>
 
-        <!-- Welcome / Service Intro Banner (Dismissible) -->
+        <!-- Welcome Banner (Dismissible) -->
         <div id="welcome-banner" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-8 rounded-[24px] shadow-toss mb-6 relative overflow-hidden shrink-0 transition-all duration-500">
             <div class="relative z-10 flex justify-between items-start">
                 <div class="max-w-2xl">
                     <h2 class="text-3xl font-bold mb-3">Knock on the right doors, at the right time.</h2>
                     <p class="text-blue-100 text-lg mb-6 leading-relaxed">
-                        Eknoc is your <strong>AI Sales Development Representative</strong>. We track millions of data points—funding rounds, office moves, and hiring sprees—to identify companies that are ready to buy <em>right now</em>. Stop cold calling; start warm closing.
+                        Eknoc is your <strong>AI Sales Development Representative</strong>. We track millions of data points to identify companies that are ready to buy <em>right now</em>.
                     </p>
                     <button onclick="dismissBanner()" class="text-sm font-semibold text-white bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm">
                         Dismiss Intro
@@ -157,19 +155,19 @@
                 <p class="text-gray-500 text-[15px]">Real-time buying intent signals tailored for you.</p>
             </div>
             <div class="flex gap-3">
-                <button id="scan-btn" onclick="startScan()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-[16px] font-bold text-[15px] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95 group">
-                    <span class="material-symbols-outlined group-hover:animate-spin">radar</span>
-                    Scan for Leads
+                <!-- Refresh Button (Replaced Scan) -->
+                <button id="refresh-btn" onclick="refreshLeads()" class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-5 py-3 rounded-[16px] font-bold text-[15px] flex items-center gap-2 shadow-sm transition-all hover:scale-105 active:scale-95">
+                    <span class="material-symbols-outlined" id="refresh-icon">sync</span>
+                    Refresh
                 </button>
             </div>
         </div>
 
-        <!-- Split View Content (Fixed Height for Scrollable Interior) -->
+        <!-- Split View Content -->
         <div class="grid grid-cols-12 gap-6 h-[750px] relative z-10">
             
-            <!-- Left Panel: Lead List (4 cols) -->
+            <!-- Left Panel: Lead List -->
             <div class="col-span-12 lg:col-span-4 flex flex-col bg-white rounded-[24px] shadow-toss border border-gray-100 overflow-hidden">
-                <!-- Filters -->
                 <div class="p-4 border-b border-gray-100 flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar whitespace-nowrap shrink-0">
                     <div class="flex gap-2">
                         <button class="filter-btn active bg-gray-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold transition-colors" data-category="ALL">All</button>
@@ -177,19 +175,15 @@
                         <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="IT/Security">IT</button>
                         <button class="filter-btn bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-gray-200 transition-colors" data-category="Interior/Office">Interior</button>
                     </div>
-                    <!-- Sidebar Pricing Trigger -->
                     <a href="#pricing-section" class="ml-2 text-xs font-bold text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-full transition-colors flex items-center gap-1 scroll-smooth">
                         <span class="material-symbols-outlined text-[14px]">diamond</span> Upgrade
                     </a>
                 </div>
-
-                <!-- List Content -->
-                <div id="leads-list" class="flex-1 overflow-y-auto p-2 space-y-2">
-                    <!-- Cards injected here -->
-                </div>
+                <!-- List -->
+                <div id="leads-list" class="flex-1 overflow-y-auto p-2 space-y-2"></div>
             </div>
 
-            <!-- Right Panel: Lead Detail (8 cols) -->
+            <!-- Right Panel: Lead Detail -->
             <div class="col-span-12 lg:col-span-8 bg-white rounded-[24px] shadow-toss border border-gray-100 overflow-hidden relative hidden lg:block">
                 <div id="detail-view" class="h-full overflow-y-auto p-10 flex flex-col">
                     <!-- Empty State -->
@@ -201,213 +195,205 @@
                         <p class="text-gray-500">Click on a lead from the list to view detailed insights.</p>
                     </div>
                 </div>
-                
-                <!-- Overlay for Scanning Effect -->
-                <div id="scan-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center">
-                    <div class="relative w-32 h-32 mb-8">
-                        <div class="absolute inset-0 border-4 border-blue-100 rounded-full animate-ping"></div>
-                        <div class="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
-                        <span class="material-symbols-outlined text-blue-600 text-4xl absolute inset-0 flex items-center justify-center">radar</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Scanning Market Signals...</h3>
-                    <p class="text-gray-500" id="scan-status">Analyzing hiring trends in your sector...</p>
-                </div>
             </div>
 
         </div>
     </main>
 
-    <!-- Pricing Section (On Page) -->
+    <!-- Pricing Section -->
     <section id="pricing-section" class="py-20 bg-white border-t border-gray-100">
         <div class="max-w-screen-xl mx-auto px-8">
             <div class="text-center mb-16">
                 <span class="text-blue-500 font-bold uppercase tracking-widest text-sm mb-2 block">Subscription Plans</span>
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Unlock Your Full Sales Potential</h2>
-                <p class="text-gray-500 text-lg max-w-2xl mx-auto">Choose a plan that fits your growth. Start with a free trial and upgrade as you close more deals.</p>
-                
-                <!-- Toggle (Visual Only for Page) -->
                 <div class="flex items-center justify-center gap-4 mt-8">
                     <span class="text-gray-500 font-medium">Monthly</span>
-                    <button class="w-14 h-8 bg-blue-500 rounded-full relative transition-colors shadow-inner" onclick="toggleBillingPage(this)">
-                        <div class="w-6 h-6 bg-white rounded-full absolute top-1 left-1 shadow-sm transition-transform duration-300" id="toggle-circle-page"></div>
+                    <button class="w-14 h-8 bg-blue-500 rounded-full relative transition-colors shadow-inner" onclick="alert('Pricing toggle is visual for demo.')">
+                        <div class="w-6 h-6 bg-white rounded-full absolute top-1 left-1 shadow-sm"></div>
                     </button>
-                    <span class="text-gray-900 font-bold">Annual <span class="text-blue-500 text-xs bg-blue-50 px-2 py-0.5 rounded-full ml-1">-20%</span></span>
+                    <span class="text-gray-900 font-bold">Annual</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Starter -->
-                <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Starter</h3>
-                    <p class="text-gray-500 text-sm mb-6">For solo founders</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold text-gray-900">$59.9</span>
-                        <span class="text-gray-400">/mo CAD</span>
-                    </div>
-                    <ul class="space-y-4 mb-8 flex-1">
-                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> 50 Leads / month</li>
-                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Basic Signals</li>
-                    </ul>
-                    <button onclick="selectPlan('Starter')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors shadow-sm">Start Free Trial</button>
+                    <div class="mb-6"><span class="text-4xl font-bold text-gray-900">$59.9</span> /mo CAD</div>
+                    <button onclick="mockBiling('Starter')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50">Start Free Trial</button>
                 </div>
-
-                <!-- Pro (Featured) -->
+                <!-- Pro -->
                 <div class="bg-gray-900 p-8 rounded-[32px] border border-gray-800 flex flex-col relative shadow-2xl transform md:-translate-y-4">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg border-4 border-white dark:border-gray-900">MOST POPULAR</div>
                     <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
-                    <p class="text-gray-400 text-sm mb-6">For growing sales teams</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold text-white">$159.9</span>
-                        <span class="text-gray-400">/mo CAD</span>
-                    </div>
-                    <ul class="space-y-4 mb-8 flex-1">
-                        <li class="flex items-center gap-3 text-gray-300"><span class="bg-blue-500 text-white rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> 200 Leads / month</li>
-                        <li class="flex items-center gap-3 text-gray-300"><span class="bg-blue-500 text-white rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Verified Emails & Phone</li>
-                        <li class="flex items-center gap-3 text-gray-300"><span class="bg-blue-500 text-white rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> CRM Integration</li>
-                    </ul>
-                    <button onclick="selectPlan('Pro')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-2xl hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-transform active:scale-95">Get Started</button>
+                    <div class="mb-6"><span class="text-4xl font-bold text-white">$159.9</span> /mo CAD</div>
+                    <button onclick="mockBiling('Pro')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-2xl hover:bg-blue-600">Get Started</button>
                 </div>
-
-                <!-- Enterprise -->
-                <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                <!-- Growth -->
+                <div class="bg-gray-50 p-8 rounded-[32px] border border-gray-200 flex flex-col">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Growth</h3>
-                    <p class="text-gray-500 text-sm mb-6">For scaling organizations</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold text-gray-900">$259.9</span>
-                        <span class="text-gray-400">/mo CAD</span>
-                    </div>
-                    <ul class="space-y-4 mb-8 flex-1">
-                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Unlimited Leads</li>
-                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> API Access</li>
-                        <li class="flex items-center gap-3 text-gray-600"><span class="bg-blue-100 text-blue-600 rounded-full p-0.5 material-symbols-outlined text-[16px]">check</span> Dedicated Success Mgr</li>
-                    </ul>
-                    <button onclick="selectPlan('Growth')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-colors shadow-sm">Contact Sales</button>
+                    <div class="mb-6"><span class="text-4xl font-bold text-gray-900">$259.9</span> /mo CAD</div>
+                    <button onclick="mockBiling('Growth')" class="w-full bg-white border border-gray-200 text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-50">Contact Sales</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pricing Modal overlay (Keep for 'Unlock' action) -->
-    <div id="pricing-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
-        <div class="bg-[#F2F4F6] w-full max-w-5xl rounded-[32px] p-8 md:p-12 shadow-2xl relative transform scale-95 transition-transform duration-300" id="pricing-content">
-            <button onclick="closePricing()" class="absolute top-6 right-6 p-2 bg-white rounded-full text-gray-500 hover:text-gray-900 shadow-sm transition-transform hover:rotate-90">
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-md rounded-[32px] p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="login-content">
+            <button onclick="closeLogin()" class="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900">
                 <span class="material-symbols-outlined">close</span>
             </button>
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-900 mb-3">Upgrade to Unlock Data</h2>
-                <p class="text-gray-500 text-lg">You hit a limit! Choose a plan to see decision maker contacts.</p>
-                <!-- Simplified content for modal since we have full section now -->
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-1">Welcome to Eknoc</h2>
+                <p class="text-gray-500 text-sm">Sign in to access your sales signals.</p>
             </div>
-             <!-- Reusing the pricing cards grid structure via JS or duplicate? I'll just duplicate for simplicity of this single file demo -->
-             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Starter Modal -->
-                <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-col">
-                    <h3 class="text-lg font-bold text-gray-900">Starter</h3>
-                    <div class="my-4"><span class="text-3xl font-bold">$59.9</span>/mo</div>
-                    <button onclick="selectPlan('Starter')" class="bg-gray-100 text-gray-900 font-bold py-3 rounded-xl hover:bg-gray-200">Select</button>
+            
+            <button onclick="login('google', 'Pro')" class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold py-3.5 rounded-xl mb-3 flex items-center justify-center gap-3 transition-colors">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
+                Continue with Google
+            </button>
+            <button onclick="login('apple', 'Starter')" class="w-full bg-black text-white hover:bg-gray-800 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition-colors">
+                <img src="https://www.svgrepo.com/show/508768/apple.svg" class="w-5 h-5 invert" alt="Apple">
+                Continue with Apple
+            </button>
+            
+            <p class="text-xs text-center text-gray-400 mt-6">By continuing, you agree to our Terms of Service.</p>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div id="account-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="account-content">
+            <button onclick="closeAccount()" class="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            
+            <div class="flex flex-col items-center mb-6">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-4">
+                    <span id="user-avatar-initial" class="font-bold text-gray-500">?</span>
                 </div>
-                <!-- Pro Modal -->
-                <div class="bg-gray-900 p-6 rounded-[24px] shadow-toss border border-gray-800 flex flex-col text-white transform scale-105">
-                    <h3 class="text-lg font-bold">Pro</h3>
-                    <div class="my-4"><span class="text-3xl font-bold">$159.9</span>/mo</div>
-                    <button onclick="selectPlan('Pro')" class="bg-blue-500 text-white font-bold py-3 rounded-xl hover:bg-blue-600">Select</button>
-                </div>
-                <!-- Growth Modal -->
-                <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-col">
-                    <h3 class="text-lg font-bold text-gray-900">Growth</h3>
-                    <div class="my-4"><span class="text-3xl font-bold">$259.9</span>/mo</div>
-                    <button onclick="selectPlan('Growth')" class="bg-gray-100 text-gray-900 font-bold py-3 rounded-xl hover:bg-gray-200">Select</button>
+                <h2 id="user-name-display" class="text-xl font-bold text-gray-900">User</h2>
+                <span id="user-email-display" class="text-sm text-gray-500">user@example.com</span>
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl p-4 mb-6">
+                <div class="text-xs font-bold text-gray-400 uppercase mb-1">Current Plan</div>
+                <div class="flex justify-between items-center">
+                    <span id="user-plan-display" class="text-lg font-bold text-blue-600">Free</span>
+                    <button class="text-xs font-semibold text-gray-900 underline">Manage</button>
                 </div>
             </div>
+            
+            <button onclick="logout()" class="w-full bg-red-50 text-red-500 hover:bg-red-100 font-bold py-3 rounded-xl transition-colors">Log Out</button>
         </div>
     </div>
 
     <!-- Scripts -->
     <script>
-        // --- Mock Data with Company Metadata ---
+        // --- Mock Data ---
         const MOCK_LEADS = [
-            { 
-                id: 1, 
-                company: "TechFlow Inc.", 
-                category: "IT/Security", 
-                score: 92, 
-                location: "San Francisco, CA", 
-                founded: "2015",
-                size: "100-250",
-                revenue: "$15M",
-                trigger: "Series B Funding ($30M)", 
-                plan: "Expanding engineering team by 200%. Needs cybersecurity audit." 
-            },
-            { 
-                id: 2, 
-                company: "GreenLeaf Studios", 
-                category: "Interior/Office", 
-                score: 85, 
-                location: "Austin, TX", 
-                founded: "2018",
-                size: "50-100",
-                revenue: "$5M",
-                trigger: "New Office Lease", 
-                plan: "Relocating to 15,000 sqft office. Needs furniture and layout planning." 
-            },
-            { 
-                id: 3, 
-                company: "Nexus Marketing", 
-                category: "Marketing", 
-                score: 88, 
-                location: "New York, NY", 
-                founded: "2020",
-                size: "10-50",
-                revenue: "$2M",
-                trigger: "CMO Hired", 
-                plan: "New Chief Marketing Officer joined. Likely reviewing ad agency contracts." 
-            },
-            { 
-                id: 4, 
-                company: "Apex Logistics", 
-                category: "General Business", 
-                score: 76, 
-                location: "Chicago, IL", 
-                founded: "1998",
-                size: "500-1000",
-                revenue: "$80M",
-                trigger: "Supply Chain Expansion", 
-                plan: "Building new distribution center. Needs logistics software." 
-            },
+            { id: 1, company: "TechFlow Inc.", category: "IT/Security", score: 92, location: "San Francisco, CA", founded: "2015", size: "100-250", revenue: "$15M", trigger: "Series B Funding ($30M)", plan: "Expanding engineering team.", contact: { name: "Sarah Jones", title: "CTO", email: "sarah@techflow.io", phone: "+1 415-555-0123" } },
+            { id: 2, company: "GreenLeaf Studios", category: "Interior/Office", score: 85, location: "Austin, TX", founded: "2018", size: "50-100", revenue: "$5M", trigger: "New Office Lease", plan: "Relocating office.", contact: { name: "Mike Chen", title: "Ops Director", email: "mike@greenleaf.com", phone: "+1 512-555-0999" } },
+            { id: 3, company: "Nexus Marketing", category: "Marketing", score: 88, location: "New York, NY", founded: "2020", size: "10-50", revenue: "$2M", trigger: "CMO Hired", plan: "New CMO.", contact: { name: "Jessica Day", title: "VP Marketing", email: "jess@nexus.nyc", phone: "+1 212-555-4000" } },
+            { id: 4, company: "Apex Logistics", category: "General Business", score: 76, location: "Chicago, IL", founded: "1998", size: "500-1000", revenue: "$80M", trigger: "Supply Chain Expansion", plan: "New distribution center.", contact: { name: "Robert Fox", title: "Head of Logistics", email: "rob@apexlog.com", phone: "+1 312-555-8888" } },
         ];
 
         // --- State ---
         let leads = [...MOCK_LEADS];
         let activeId = null;
         let activeCategory = 'ALL';
-        let isAnnual = false;
+        let currentUser = null; // { name, plan, provider }
 
-        // --- Elements ---
-        const listContainer = document.getElementById('leads-list');
-        const detailContainer = document.getElementById('detail-view');
-        const scanOverlay = document.getElementById('scan-overlay');
-        const scanStatus = document.getElementById('scan-status');
-        const pricingModal = document.getElementById('pricing-modal');
-        const pricingContent = document.getElementById('pricing-content');
-        const ticker = document.getElementById('news-ticker');
-        const welcomeBanner = document.getElementById('welcome-banner');
+        // --- Auth Logic ---
+        function handleAuthClick() {
+            if (currentUser) {
+                // Open Account Modal
+                document.getElementById('user-name-display').innerText = currentUser.name;
+                document.getElementById('user-email-display').innerText = currentUser.provider === 'google' ? 'user@gmail.com' : 'user@icloud.com';
+                document.getElementById('user-plan-display').innerText = currentUser.plan;
+                document.getElementById('user-avatar-initial').innerText = currentUser.name[0];
+                
+                const modal = document.getElementById('account-modal');
+                const content = document.getElementById('account-content');
+                modal.classList.remove('hidden', 'flex');
+                modal.classList.add('flex');
+                setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
+            } else {
+                // Open Login Modal
+                const modal = document.getElementById('login-modal');
+                const content = document.getElementById('login-content');
+                modal.classList.remove('hidden', 'flex');
+                modal.classList.add('flex');
+                setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
+            }
+        }
 
-        // --- Ticker Logic ---
-        const newsItems = [
-            "TechFlow Inc. raised $30M Series B · 2m ago",
-            "Shopify announces new Toronto HQ · 5m ago",
-            "Samsung Biologics expands plant · 12m ago",
-            "RBC opens new innovation hub · 15m ago",
-            "StartUp North hiring 50+ engineers · 22m ago"
-        ];
-        
-        // Duplicate items for infinite scroll illusion
-        const tickerContent = [...newsItems, ...newsItems].map(item => 
-            `<span class="opacity-80 hover:opacity-100 hover:text-blue-400 transition-colors cursor-pointer">• ${item}</span>`
-        ).join('');
-        ticker.innerHTML = tickerContent;
+        function closeLogin() {
+            const modal = document.getElementById('login-modal');
+            const content = document.getElementById('login-content');
+            modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        }
+
+        function closeAccount() {
+            const modal = document.getElementById('account-modal');
+            const content = document.getElementById('account-content');
+            modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        }
+
+        function login(provider, demoPlan) {
+            currentUser = {
+                name: provider === 'google' ? 'Kim Min-su' : 'John Doe',
+                provider: provider,
+                plan: demoPlan
+            };
+            
+            // Update UI
+            const authBtn = document.getElementById('auth-btn');
+            authBtn.innerText = 'My Account';
+            authBtn.classList.remove('bg-gray-900', 'text-white');
+            authBtn.classList.add('bg-white', 'text-gray-900', 'border', 'border-gray-200');
+            
+            showToast(`Logged in with ${provider === 'google' ? 'Google' : 'Apple'}!`);
+            closeLogin();
+            
+            // Re-render Detail if one is selected to show/hide data
+            if (activeId) selectLead(activeId);
+        }
+
+        function logout() {
+            currentUser = null;
+            const authBtn = document.getElementById('auth-btn');
+            authBtn.innerText = 'Login';
+            authBtn.classList.add('bg-gray-900', 'text-white');
+            authBtn.classList.remove('bg-white', 'text-gray-900', 'border', 'border-gray-200');
+            
+            closeAccount();
+            showToast('Logged out successfully.');
+            
+            if (activeId) selectLead(activeId);
+        }
+
+        // --- Refresh Logic ---
+        function refreshLeads() {
+            const icon = document.getElementById('refresh-icon');
+            icon.classList.add('animate-spin-fast');
+            
+            setTimeout(() => {
+                icon.classList.remove('animate-spin-fast');
+                // Shuffle logic for effect
+                leads.sort(() => Math.random() - 0.5);
+                renderList();
+                showToast("Signals updated.");
+            }, 1000);
+        }
 
         // --- Render List ---
+        const listContainer = document.getElementById('leads-list');
+        const detailContainer = document.getElementById('detail-view');
+        
         function renderList() {
             listContainer.innerHTML = '';
             const filtered = activeCategory === 'ALL' ? leads : leads.filter(l => l.category === activeCategory);
@@ -432,18 +418,16 @@
             });
         }
 
-        // --- Render Detail ---
         function selectLead(id) {
             activeId = id;
-            renderList(); // Re-render to update active state styles
-            
+            renderList();
             const lead = leads.find(l => l.id === id);
             if (!lead) return;
 
-            // Animate transition
+            // Unlock Logic
+            const isUnlocked = currentUser && (currentUser.plan === 'Pro' || currentUser.plan === 'Growth');
+
             detailContainer.innerHTML = '';
-            detailContainer.style.opacity = '0';
-            
             setTimeout(() => {
                 detailContainer.innerHTML = `
                     <div class="animate-fade-in-up">
@@ -462,8 +446,7 @@
                             </div>
                         </div>
 
-                        <!-- Company Info Row -->
-                        <div class="flex gap-4 mb-8">
+                         <div class="flex gap-4 mb-8">
                              <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
                                 <span class="material-symbols-outlined text-gray-400">calendar_month</span>
                                 <div>
@@ -481,7 +464,7 @@
                              <div class="bg-gray-50 px-5 py-3 rounded-xl border border-gray-100 flex items-center gap-3">
                                 <span class="material-symbols-outlined text-gray-400">payments</span>
                                 <div>
-                                    <div class="text-xs text-gray-400 font-bold uppercase">Est. Rev</div>
+                                    <div class="text-xs text-gray-400 font-bold uppercase">Revenue</div>
                                     <div class="text-sm font-bold text-gray-900">${lead.revenue}</div>
                                 </div>
                             </div>
@@ -493,134 +476,59 @@
                                     <span class="material-symbols-outlined text-orange-500">bolt</span>
                                     <h3 class="font-bold text-gray-900">Trigger Event</h3>
                                 </div>
-                                <p class="text-gray-700 font-medium leading-relaxed bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                                    ${lead.trigger}
-                                </p>
+                                <p class="text-gray-700 font-medium leading-relaxed bg-white p-4 rounded-xl shadow-sm border border-gray-100">${lead.trigger}</p>
                             </div>
                             <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
                                 <div class="flex items-center gap-3 mb-3">
                                     <span class="material-symbols-outlined text-blue-600">psychology</span>
                                     <h3 class="font-bold text-blue-900">AI Recommendation</h3>
                                 </div>
-                                <p class="text-blue-800 leading-relaxed">
-                                    ${lead.plan}
-                                </p>
+                                <p class="text-blue-800 leading-relaxed">${lead.plan}</p>
                             </div>
                         </div>
 
-                        <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm relative overflow-hidden group">
-                           <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                           <span class="material-symbols-outlined text-gray-300 text-6xl mb-4 block">lock_person</span>
-                           <h3 class="text-xl font-bold text-gray-900 mb-2">Decision Makers Hidden</h3>
-                           <p class="text-gray-500 mb-6">Unlock to see CEO, CTO, and VP of Sales contacts.</p>
-                           <button onclick="openPricing()" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95 relative z-10">
-                                Unlock Contact Data
-                           </button>
-                        </div>
+                        ${isUnlocked ? `
+                            <!-- Unlocked View -->
+                            <div class="bg-[#F2F4F6] border border-green-200 rounded-2xl p-6 relative overflow-hidden">
+                                <div class="flex items-center gap-3 mb-4">
+                                     <span class="material-symbols-outlined text-green-600 bg-green-100 p-2 rounded-full">lock_open</span>
+                                     <h3 class="font-bold text-gray-900 text-lg">Contact Unlocked</h3>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-gray-200 flex items-start justify-between shadow-sm">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-gray-900">${lead.contact.name}</h4>
+                                        <p class="text-gray-500 text-sm mb-2">${lead.contact.title}</p>
+                                        <div class="flex gap-4 text-sm text-blue-600 font-medium">
+                                            <a href="#" class="hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">mail</span> ${lead.contact.email}</a>
+                                            <a href="#" class="hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">call</span> ${lead.contact.phone}</a>
+                                        </div>
+                                    </div>
+                                    <img src="https://ui-avatars.com/api/?name=${lead.contact.name}&background=random" class="rounded-full w-12 h-12">
+                                </div>
+                            </div>
+                        ` : `
+                            <!-- Locked View -->
+                            <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm relative overflow-hidden group">
+                               <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                               <span class="material-symbols-outlined text-gray-300 text-6xl mb-4 block">lock_person</span>
+                               <h3 class="text-xl font-bold text-gray-900 mb-2">Decision Makers Hidden</h3>
+                               <p class="text-gray-500 mb-6">Unlock to see CEO, CTO, and VP of Sales contacts.</p>
+                               <button onclick="document.getElementById('pricing-section').scrollIntoView()" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95 relative z-10">
+                                    View Pricing
+                               </button>
+                            </div>
+                        `}
                     </div>
                 `;
-                detailContainer.style.opacity = '1';
-                detailContainer.style.transition = 'opacity 0.3s ease-out';
             }, 50);
         }
 
-        // --- Scan Implementation ---
-        function startScan() {
-            const btn = document.getElementById('scan-btn');
-            btn.disabled = true;
-            scanOverlay.classList.remove('hidden');
-            scanOverlay.classList.add('flex');
-            
-            const messages = ["Connecting to LinkedIn API...", "Reviewing Job Postings...", "Calculating Scores..."];
-            let msgIndex = 0;
-            const msgInterval = setInterval(() => {
-                scanStatus.innerText = messages[msgIndex % messages.length];
-                msgIndex++;
-            }, 1000);
-
-            setTimeout(() => {
-                clearInterval(msgInterval);
-                scanOverlay.classList.add('hidden');
-                scanOverlay.classList.remove('flex');
-                btn.disabled = false;
-
-                const newLeads = [
-                    { 
-                        id: Date.now(), 
-                        company: "Solaris AI", 
-                        category: "IT/Security", 
-                        score: 98, 
-                        location: "Palo Alto, CA", 
-                        founded: "2022",
-                        size: "20-50",
-                        revenue: "$8M",
-                        trigger: "Hiring VP of Engineering", 
-                        plan: "Scaling tech team rapidly." 
-                    },
-                    { 
-                        id: Date.now()+1, 
-                        company: "BlueOcean Retail", 
-                        category: "Marketing", 
-                        score: 89, 
-                        location: "Miami, FL", 
-                        founded: "2016",
-                        size: "200-500",
-                        revenue: "$40M",
-                        trigger: "Rebranding Announced", 
-                        plan: "Major brand overhaul." 
-                    }
-                ];
-                
-                leads = [...newLeads, ...leads];
-                renderList();
-                selectLead(newLeads[0].id);
-                
-                // Show Banner again if it was closed
-                // welcomeBanner.style.display = 'block'; 
-            }, 3000);
-        }
-
-        // --- Banner Logic ---
-        function dismissBanner() {
-            welcomeBanner.style.opacity = '0';
-            welcomeBanner.style.marginTop = `-${welcomeBanner.offsetHeight}px`;
-            setTimeout(() => {
-                welcomeBanner.style.display = 'none';
-            }, 500);
-        }
-
-        // --- Pricing Trigger Logic ---
-        function openPricing() {
-            pricingModal.classList.remove('hidden');
-            pricingModal.classList.add('flex');
-            // Small trigger delay for fade in
-            setTimeout(() => {
-                pricingModal.classList.remove('opacity-0');
-                pricingContent.classList.remove('scale-95');
-                pricingContent.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closePricing() {
-            pricingModal.classList.add('opacity-0');
-            pricingContent.classList.remove('scale-100');
-            pricingContent.classList.add('scale-95');
-            setTimeout(() => {
-                pricingModal.classList.add('hidden');
-                pricingModal.classList.remove('flex');
-            }, 300);
-        }
-
-        function toggleBillingPage(btn) {
-            isAnnual = !isAnnual;
-            const circle = btn.querySelector('div');
-            circle.style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
-            // Visual only for this static demo page
-        }
-
-        function selectPlan(plan) {
-            alert(`You selected the ${plan} plan! Redirecting to payment...`);
-            window.location.href = 'contact.html';
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full font-bold shadow-2xl animate-fade-in-up z-[200] flex items-center gap-2';
+            toast.innerHTML = `<span class="material-symbols-outlined text-green-400">check_circle</span> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
         // --- Init ---
@@ -634,19 +542,18 @@
         `;
         document.head.appendChild(style);
 
-        fetchLeads();
+        // Ticker content
+        const newsItems = ["TechFlow Inc. raised $30M Series B · 2m ago", "Shopify announces new Toronto HQ · 5m ago", "Samsung Biologics expands plant · 12m ago"];
+        const ticker = document.getElementById('news-ticker');
+        ticker.innerHTML = [...newsItems, ...newsItems].map(item => `<span class="opacity-80 hover:opacity-100 hover:text-blue-400 transition-colors cursor-pointer mr-10">• ${item}</span>`).join('');
+
+        renderList();
         
-        // Filter Logic
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-gray-900', 'text-white');
-                    b.classList.add('bg-gray-100', 'text-gray-600');
-                });
-                btn.classList.remove('bg-gray-100', 'text-gray-600');
-                btn.classList.add('bg-gray-900', 'text-white');
-                activeCategory = btn.dataset.category;
-                renderList();
+                document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-gray-900', 'text-white'); b.classList.add('bg-white', 'text-gray-600'); });
+                btn.classList.remove('bg-gray-100', 'text-gray-600'); btn.classList.add('bg-gray-900', 'text-white');
+                activeCategory = btn.dataset.category; renderList();
             });
         });
 
